@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Articulo;
 use App\Proveedor;
-use App\Rol;
+use App\Role;
 
 class ArticuloController extends Controller
 {
@@ -22,8 +22,8 @@ class ArticuloController extends Controller
         $user_id = null;
         $user = $request->user();
         $articulos = [];
-        if($user->roles_id == Rol::roleId('proveedor') || $user->roles_id == Rol::roleId('administrador')
-         || $user->roles_id == Rol::roleId('supervisor')){
+        if($user->hasRole('provider') || $user->hasRole('admin')
+         || $user->hasRole('supervisor')){
             if($request->has('user_id'))
             {
                 $user_id = $request->user_id;
@@ -67,7 +67,7 @@ class ArticuloController extends Controller
         $this->validateArticulo($request);
 
         $user = $request->user();
-        if($user->roles_id == Rol::roleId('proveedor')){
+        if($user->hasRole('provider')){
             $proveedor = Proveedor::where('user_id', $user->id)->firstOrFail();
 
             $articulo = Articulo::create([
@@ -132,7 +132,7 @@ class ArticuloController extends Controller
                 'precio' => 'nullable'
             ]);
         $user = $request->user();
-        if($user->roles_id == Rol::roleId('proveedor')){
+        if($user->hasRole('provider')){
             $proveedor = Proveedor::where('user_id', $user->id)->firstOrFail();
 
             $articulo = Articulo::where('id', $id)->where('proveedor_id', $proveedor->id)->firstOrFail();

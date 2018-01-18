@@ -180,6 +180,8 @@ return [
         Kim\Activity\ActivityServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+        Zizaco\Entrust\EntrustServiceProvider::class,
+
 
     ],
 
@@ -231,6 +233,7 @@ return [
         'Activity' => Kim\Activity\ActivityFacade::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
 
     ],
 

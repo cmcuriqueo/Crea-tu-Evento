@@ -16,7 +16,7 @@ use App\Domicilio;
 use App\Horario;
 use App\Mensaje;
 use App\Reserva;
-use App\Rol;
+use App\Role;
 
 class ReservaController extends Controller
 {
@@ -54,8 +54,8 @@ class ReservaController extends Controller
     }
 
     public function reservasProveedor(Request $request, $id){
-        if($request->user()->roles_id == Rol::roleId('Proveedor') || $request->user()->roles_id == Rol::roleId('Administrador')){
-            if($id == 'me' && $request->user()->roles_id == Rol::roleId('Proveedor')){
+        if($request->user()->hasRole('provider') || $request->user()->hasRole('admin')){
+            if($id == 'me' && $request->user()->hasRole('provider')){
                 $id = $request->user()->proveedor->id;
             }
             $reservas = Reserva::join('publicaciones', 'publicaciones.id', '=', 'reservas.publicacion_id')
@@ -296,7 +296,7 @@ class ReservaController extends Controller
         $reserva->articulos()->detach();
         $reserva->articulos()->attach($request->articulos);
 
-        if($request->user()->roles_id == Rol::roleId('Proveedor'))
+        if($request->user()->hasRole('provider'))
         {
             $reserva->presupuestado = true;
             $reserva->precio_total = $request->precio_total;
@@ -327,7 +327,7 @@ class ReservaController extends Controller
         
         if( $reserva->save() )
         {
-            if($request->user()->roles_id == Rol::roleId('Proveedor'))
+            if($request->user()->hasRole('provider'))
             {
                 Mail::to($reserva->publicacion->proveedor->email)->queue(new ResponseProveedor($reserva));
             }

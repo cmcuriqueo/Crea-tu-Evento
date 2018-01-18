@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Zizaco\Entrust\Traits\EntrustUserTrait;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use EntrustUserTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -15,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'roles_id', 'estado'
+        'name', 'email', 'password', 'estado'
     ];
 
     /**
@@ -47,9 +49,8 @@ class User extends Authenticatable
         return $this->belongsTo('App\Reserva');
     }
 
-    public function rol()
-    {     
-        return $this->belongsTo('App\Rol', 'roles_id', 'id');    
+    public function role(){
+        return $this->belongsTo('App\Models\Role');
     }
 
     public function scopePassword($query, $password){

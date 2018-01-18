@@ -19,7 +19,7 @@ use App\Telefono;
 use Carbon\Carbon;
 use App\Proveedor;
 use App\Publicacion;
-use App\Rol;
+use App\Role;
 use App\Domicilio;
 use App\Prestacion;
 use App\Reserva;
@@ -95,7 +95,8 @@ class ProveedorController extends Controller
             $operador = User::where('id', $request->user()->id)->with('usuario')->first();
 
             $log = Log::logs($proveedor->id, 'proveedores', 'create', null, 'Ha registrado un nuevo proveedor.');
-            $for_role = Rol::roleId('Supervisor');
+            $role = Role::findOrFail(2); // Pull back a given role
+            $for_role = $role->id;
             Notificacion::create(
                 [
                     'for_role_id' => $for_role, 
@@ -103,7 +104,7 @@ class ProveedorController extends Controller
                     'by_user_id' => $request->user()->id,
                     'descripcion' => "Se ha registrado un nuevo proveedor."
                 ]);
-            $supervisores = User::where('roles_id', Rol::roleId('Supervisor'))->activo()->get();
+            $supervisores = User::hasRole('supervisor')->activo()->get();
             foreach ($supervisores as $supervisor) {
                 Mail::to($supervisor->email)->queue(new NewProveedorToOperador($operador, $proveedor));
             }
@@ -212,7 +213,8 @@ class ProveedorController extends Controller
         $proveedor = Proveedor::where('user_id', $id)->with('user.usuario')->firstOrFail();
 
         if($request->action == 'Baja' ){
-            $proveedor->user->roles_id = Rol::roleId('Usuario');
+            $role = Role::findOrFail(5); // Pull back a given role
+            $proveedor->user->roles()->attach($role->id);
 
             Publicacion::where('proveedor_id', $proveedor->id)
                 ->update(['estado'=> 0]);
@@ -233,7 +235,8 @@ class ProveedorController extends Controller
             $proveedor->rejected_by_user_id = $request->user()->id;
             $proveedor->accepted_by_user_id = null;
             $log = Log::logs($proveedor->id, 'proveedores', 'baja', null, 'Ha dado de baja un proveedor.'); 
-            $for_role = Rol::roleId('Administrador');
+            $role = Role::findOrFail(1); // Pull back a given role
+            $for_role = $role->id;
             Notificacion::create(
                 [
                     'for_role_id' => $for_role, 
@@ -246,7 +249,8 @@ class ProveedorController extends Controller
             $proveedor->rejected_by_user_id = $request->user()->id;
             $proveedor->accepted_by_user_id = null;
             $log = Log::logs($proveedor->id, 'proveedores', 'rechazado', null, 'Ha rechazado un proveedor.'); 
-            $for_role = Rol::roleId('Administrador');
+            $role = Role::findOrFail(1); // Pull back a given role
+            $for_role = $role->id;
             Notificacion::create(
                 [
                     'for_role_id' => $for_role, 
@@ -255,18 +259,20 @@ class ProveedorController extends Controller
                     'descripcion' => "Se ha rechazado un proveedor."
                 ]);
         }
-        else if ( $request->action == 'Aprobado' && $proveedor->user->roles_id == Rol::roleId('Usuario') ) 
+        else if ( $request->action == 'Aprobado' && $proveedor->user->hasRole('user') ) 
         {
             $supervisor = User::where('id', $request->user()->id)->with('usuario')->first();
-            $administradores = User::where('roles_id', Rol::roleId('Administrador'))->activo()->get();
+            $administradores = User::withRole('admin')->activo()->get();
             foreach ($administradores as $administrador) {
                 Mail::to($administrador->email)->queue(new NewProveedorToSupervisor($supervisor, $proveedor));
             }
-            $proveedor->user->roles_id = Rol::roleId('Proveedor');
+            $role = Role::findOrFail(4); // Pull back a given role
+            $proveedor->user->roles()->attach($role->id);;
             $proveedor->accepted_by_user_id = $request->user()->id;
             $proveedor->rejected_by_user_id = null;
             $log = Log::logs($proveedor->id, 'proveedores', 'aprobado', null, 'Ha acepatado un nuevo proveedor.');
-            $for_role = Rol::roleId('Administrador');
+            $role = Role::findOrFail(1); // Pull back a given role
+            $for_role = $role->id;
             Notificacion::create(
                 [
                     'for_role_id' => $for_role, 

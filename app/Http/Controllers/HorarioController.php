@@ -9,7 +9,7 @@ use App\Horario;
 use App\Reserva;
 use App\Publicacion;
 use App\Proveedor;
-use App\Rol;
+use App\Role;
 use Carbon\Carbon;
 
 class HorarioController extends Controller
@@ -186,7 +186,7 @@ class HorarioController extends Controller
         $this->validateHorario($request);
         $user = $request->user();
         $horarioRepetido = null;
-        if($user->roles_id == Rol::roleId('proveedor')){
+        if($user->hasRole('provider')){
             $proveedor = Proveedor::where('user_id', $user->id)->firstOrFail();
             $publicacionId = null;
             $horario = Horario::where('id', $id)->firstOrFail();

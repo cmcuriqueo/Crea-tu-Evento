@@ -18,7 +18,7 @@ use App\Proveedor;
 use App\Favorito;
 use App\Horario;
 use App\Foto;
-use App\Rol;
+use App\Role;
 
 class PublicacionController extends Controller
 {
@@ -185,7 +185,7 @@ class PublicacionController extends Controller
 
         if(!$request->user())
             VistaPublicacion::create(['publicacion_id' => $publicacion->id]);
-        else if($request->user() && $request->user()->roles_id == Rol::roleId('Usuario')) 
+        else if($request->user() && $request->user()->rhasRole('user')) 
             VistaPublicacion::create(['publicacion_id' => $publicacion->id, 'user_id' => $request->user()->id]);
 
         return response()->json(
@@ -392,7 +392,7 @@ class PublicacionController extends Controller
     }
 
     public function destroy($id){
-        if($request->user()->roles_id == Rol::roleId('Proveedor'))
+        if($request->user()->hasRole('provider'))
         {
             $publicacion = Publicacion::where('id', $id)->firstOrFail();
             if($publicacion->proveedor_id == $request->user()->proveedor->id)

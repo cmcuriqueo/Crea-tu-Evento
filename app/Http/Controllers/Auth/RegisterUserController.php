@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Usuario;
 use App\User;
-use App\Rol;
+use App\Role;
 
 class RegisterUserController extends Controller
 {
@@ -48,8 +48,7 @@ class RegisterUserController extends Controller
         return User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'roles_id' => Rol::usuario()]);
+            'password' => bcrypt($request->password)]);
     }
 
     /**
@@ -64,6 +63,8 @@ class RegisterUserController extends Controller
         $this->validatorUsuario($request);
 
         event(new Registered($user = $this->create($request)));
+        $role = Role::findOrFail(5);
+        $user->roles()->attach($role);
         
         if(!$request->has('login') || ($request->has('login') && $request->login))
             $this->guard()->login($user);

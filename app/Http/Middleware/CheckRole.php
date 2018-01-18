@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Response;
-use App\Rol;
+use App\Role;
 
 use Closure;
 
@@ -24,8 +24,8 @@ class CheckRole
             $idRole = null;
             foreach ($roles as $role) {
 
-                $idRole = Rol::roleId($role);
-                $bool =  ($request->user()->roles_id == $idRole) ? true : false;
+                $idRole = Role::roleId($role);
+                $bool =  ($request->user()->hasRole($idRole)) ? true : false;
                 if($bool) return $next($request);
             }
 

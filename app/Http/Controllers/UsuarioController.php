@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use App\Usuario;
 use App\User;
-use App\Rol;
+use App\Role;
 use App\Log;
 use App\Proveedor;
 use App\Prestacion;
@@ -39,8 +39,9 @@ class UsuarioController extends Controller
 
         $queryUser = User::where(function($query){
                         $query->where('id', '!=', $request->user()->id)
-                            ->where('roles_id', '!=', Rol::roleId('Proveedor'))
-                            ->where('roles_id', '!=', Rol::roleId('Administrador'));
+                            ->withRole('operator')
+                            ->withRole('user')
+                            ->withRole('supervisor');
                         });
 
         if($request->filter){
@@ -58,9 +59,9 @@ class UsuarioController extends Controller
             $queryUser = $queryUser->whereIn('id', $usuario);
         }
         if( $request->has('page') || $request->has('per_page') ) 
-            $users = $queryUser->with('usuario', 'rol')->paginate(10);
+            $users = $queryUser->with('usuario', 'role')->paginate(10);
         else
-            $users = $queryUser->with('usuario', 'rol')->get();
+            $users = $queryUser->with('usuario', 'role')->get();
         return response()->json($users);
     }
 
@@ -95,7 +96,7 @@ class UsuarioController extends Controller
     {
        
         $usuario = Usuario::where('user_id', $id)
-            ->with('localidad.provincia', 'user.rol', 'user.proveedor.prestaciones.domicilio', 'user.proveedor.domicilio.localidad.provincia','user.proveedor.publicaciones', 'user.proveedor.prestaciones', 'user.proveedor.telefono')
+            ->with('localidad.provincia', 'user.role', 'user.proveedor.prestaciones.domicilio', 'user.proveedor.domicilio.localidad.provincia','user.proveedor.publicaciones', 'user.proveedor.prestaciones', 'user.proveedor.telefono')
                 ->firstOrFail();
 
         if (Gate::allows('show-profile', $usuario)) {
@@ -315,10 +316,8 @@ class UsuarioController extends Controller
             ->join('usuarios', 'usuarios.user_id', '=', 'users.id')
             ->select('users.id as value', DB::raw('CONCAT(usuarios.apellido, ", ",usuarios.nombre, " - ", users.email) as label'))
                 
-                ->where([
-                    ['users.roles_id', Rol::roleId('Usuario')],
-                    ['users.id','!=', $request->user()->id]
-                ])
+                ->withRole('user')
+                ->where('users.id','!=', $request->user()->id)
 
                 ->where(function($query) use ($like){
                     $query->where('usuarios.nombre','like' ,$like)

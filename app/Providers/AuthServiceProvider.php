@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use App\Rol;
+use App\Role;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -28,21 +28,21 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('show-log', function ($user, $actividad) {
             return $user->id == $actividad->user_id
-            ||$user->roles_id == Rol::roleId('Administrador')
-            ||$user->roles_id == Rol::roleId('Supervisor');
+            ||$user->hasRole('admin')
+            ||$user->hasRole('supervisor');
         });
 
         Gate::define('show-activity', function($user, $id) {
             return $user->id == $id
-            ||$user->roles_id == Rol::roleId('Administrador')
-            ||$user->roles_id == Rol::roleId('Supervisor');
+            ||$user->hasRole('admin')
+            ||$user->hasRole('supervisor');
         });
 
         Gate::define('show-profile', function($user, $usuario) {
             return $user->id === $usuario->user_id 
-                || $usuario->user->roles_id === Rol::roleId('Proveedor') 
-                || $user->roles_id === Rol::roleId('Administrador')
-                || $user->roles_id === Rol::roleId('Supervisor');
+                || $usuario->hasRole('provider') 
+                || $user->hasRole('admin')
+                || $user->hasRole('supervisor');
         });
 
     }

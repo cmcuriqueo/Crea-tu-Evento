@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 use App\Notificacion;
 
 use App\NotificacionVista;
-use App\Rol;
+use App\Role;
 
 class NotificacionesController extends Controller
 {
@@ -28,7 +28,7 @@ class NotificacionesController extends Controller
 
     }
 
-    public function vista(Request $request, $id){
+    public function show(Request $request, $id){
         $notificacion = Notificacion::where('id', $id)->firstOrFail();
         $notificacionvista = NotificacionVista::create(['user_id' => $request->user()->id, 'notificacion_id' => $notificacion->id]);
         if($notificacionvista->save()){

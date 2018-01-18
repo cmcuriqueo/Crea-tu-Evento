@@ -4,7 +4,7 @@ namespace App\Mail;
 
 use App\User;
 use App\Proveedor;
-use App\Rol;
+use App\Role;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;

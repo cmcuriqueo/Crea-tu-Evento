@@ -1,6 +1,6 @@
 <?php 
 namespace App;
-use App\Rol;
+use App\Role;
 use Synfony\Component\DomCrawler\Imagen;
 use Laravel\Socialite\Contracts\User as ProviderUser;
 
@@ -26,10 +26,11 @@ class SocialAccountService
 			if(!$user){
 				$user = User::create([
 						'email'=>$providerUser->getEmail(),
-						'name'=>$providerUser->getName(),
-						'roles_id'=>Rol::usuario(),
+						'name'=>$providerUser->getName()
 
 					]);
+		        $role = Role::findOrFail(5);
+		        $user->roles()->attach($role);
 				//recupera 
 				$img= $providerUser->getAvatar();
 		        $filename  = str_random(30) . '.'.'jpg';
