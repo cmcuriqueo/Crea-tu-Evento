@@ -214,7 +214,11 @@ class ReservaController extends Controller
 
         if( $reserva->save() )
         {
-            Mail::to($publicacion->proveedor->email)->queue(new MailReserva($reserva));
+            try {
+                Mail::to($publicacion->proveedor->email)->queue(new MailReserva($reserva));
+            } catch(Exception $e){
+                    Logging::warning($e->getMessage());
+            }
             return response(null, Response::HTTP_OK);
         }
         else
@@ -237,19 +241,24 @@ class ReservaController extends Controller
             if($yaReservado){
                 return response(null, Response::HTTP_CONFLICT);
             } else {
-                $reserva->update(['estado' => $request->estado]);
+                DB::beginTransaction();
 
-                if( $reserva->save() )
-                {
+                try {
+                    $reserva->update(['estado' => $request->estado]);
+                    DB::commit();
                     if($request->estado == 'confirmado'){
-                        Mail::to($reserva->publicacion->proveedor->email)->queue(new ReservaConfirmacion($reserva));
+                        try {
+                            Mail::to($reserva->publicacion->proveedor->email)->queue(new ReservaConfirmacion($reserva));
+                        } catch(Exception $e){
+                            Logging::warning($e->getMessage());
+                        }
                     }
                     return response(null, Response::HTTP_OK);
-                }
-                else 
-                {
+                } catch (\Exception $e) {
+                    DB::rollback();
                     return response(null, Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
+
             }
         }
         else
@@ -329,7 +338,11 @@ class ReservaController extends Controller
         {
             if($request->user()->hasRole('provider'))
             {
-                Mail::to($reserva->publicacion->proveedor->email)->queue(new ResponseProveedor($reserva));
+                try {
+                    Mail::to($reserva->publicacion->proveedor->email)->queue(new ResponseProveedor($reserva));
+                } catch(Exception $e){
+                    Logging::warning($e->getMessage());
+                }
             }
             return response(null, Response::HTTP_OK);
         }

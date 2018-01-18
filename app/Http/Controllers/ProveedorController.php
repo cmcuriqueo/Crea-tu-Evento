@@ -26,6 +26,8 @@ use App\Reserva;
 use App\Rubro;
 use App\Log;
 use App\User;
+use Log as Logging;
+use Exception;
 
 class ProveedorController extends Controller
 {
@@ -106,7 +108,11 @@ class ProveedorController extends Controller
                 ]);
             $supervisores = User::hasRole('supervisor')->activo()->get();
             foreach ($supervisores as $supervisor) {
-                Mail::to($supervisor->email)->queue(new NewProveedorToOperador($operador, $proveedor));
+                try{
+                    Mail::to($supervisor->email)->queue(new NewProveedorToOperador($operador, $proveedor));
+                catch(Exception $e){
+                    Logging::warning($e->getMessage());
+                }
             }
             return response(null, Response::HTTP_OK);
         
@@ -229,7 +235,12 @@ class ProveedorController extends Controller
             
 
             foreach ($reservas as $reserva) {
-                Mail::to($reserva->user->email)->queue(new CancelarReservasDeProveedor($reserva));
+                try {
+                    Mail::to($reserva->user->email)
+                    ->queue(new CancelarReservasDeProveedor($reserva));
+                } catch(Exception $e){
+                    Logging::warning($e->getMessage());
+                }
             }
 
             $proveedor->rejected_by_user_id = $request->user()->id;
@@ -264,7 +275,12 @@ class ProveedorController extends Controller
             $supervisor = User::where('id', $request->user()->id)->with('usuario')->first();
             $administradores = User::withRole('admin')->activo()->get();
             foreach ($administradores as $administrador) {
-                Mail::to($administrador->email)->queue(new NewProveedorToSupervisor($supervisor, $proveedor));
+                try {
+                    Mail::to($administrador->email)
+                        ->queue(new NewProveedorToSupervisor($supervisor, $proveedor));
+                } catch(Exception $e){
+                    Logging::warning($e->getMessage());
+                }
             }
             $role = Role::findOrFail(4); // Pull back a given role
             $proveedor->user->roles()->attach($role->id);;
@@ -290,7 +306,11 @@ class ProveedorController extends Controller
         $proveedor->observaciones = $request->input('observaciones');
 
         if($proveedor->user->save() && $proveedor->save()){
-                   Mail::to($proveedor->email)->queue(new EstadoProveedor($proveedor));
+            try {
+                Mail::to($proveedor->email)->queue(new EstadoProveedor($proveedor));
+            } catch(Exception $e){
+                    Logging::warning($e->getMessage());
+            }
             return response(null, Response::HTTP_OK);
 
         } else {

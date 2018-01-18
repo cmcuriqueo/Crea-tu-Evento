@@ -66,12 +66,13 @@ class RegisterUserController extends Controller
         $role = Role::findOrFail(5);
         $user->roles()->attach($role);
         
-        if(!$request->has('login') || ($request->has('login') && $request->login))
-            $this->guard()->login($user);
-
+        if(!$request->has('login') || ($request->has('login') && $request->login)){
+          $token = JWTAuth::fromUser($user);
+        }
+        $meta['token'] = $token;
         $this->createUsuario($request, $user->id);
-        User::where('id', $user->id)->with('usuario.localidad.provincia')->first();
-        return response()->json(['data' =>  $user, 'csrfToken' => csrf_token()], 200);
+        $user = User::where('id', $user->id)->with('usuario.localidad.provincia', 'role')->first();
+        return response()->json(['data' =>  $user, 'meta' => $meta, 'csrfToken' => csrf_token()], 200);
     }
 
 
