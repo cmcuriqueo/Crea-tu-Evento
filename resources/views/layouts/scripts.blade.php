@@ -19,3 +19,5 @@
 <script src="{{ asset('/plugins/slimScroll/jquery.slimscroll.min.js') }}"></script>
 
 <script src="{{ asset('/js/app.js') }}"></script>
+
+<script src="{{ 'https://maps.googleapis.com/maps/api/js?key='. env('GOOGLE_PLACES_KEY').'&libraries=places'}}"></script>

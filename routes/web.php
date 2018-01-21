@@ -1,8 +1,11 @@
 <?php
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/json', 'LocalidadController@searchGooglePlace');
 
 //login socialite
 Route::get('/redirect','Auth\AuthController@redirect');
@@ -11,7 +14,8 @@ Route::get('/callback','Auth\AuthController@callback');
 Route::group(['middleware' => ['api'], 'prefix' => 'api'], function () {
     Route::get('categoria','CategoriaController@index');
     Route::get('subcategoria', 'SubcategoriaController@index');
-    Route::get('localidades', 'LocalidadController@list_options');
+    Route::get('localidades', 'LocalidadController@searchGooglePlace');
+    
     Route::get('localidadesAll', 'LocalidadController@index');
     Route::post('login', 'Auth\AuthController@login');
     Route::post('logout', 'Auth\AuthController@logout');

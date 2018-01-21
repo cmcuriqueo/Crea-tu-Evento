@@ -19,8 +19,8 @@ class CreateDomiciliosTable extends Migration
             $table->string('calle', 50);
             $table->integer('numero')->unsigned();
             $table->integer('piso')->unsigned();
-            $table->integer('localidad_id')->unsigned();
-            $table->foreign('localidad_id')->references('id')->on('localidades');
+            $table->integer('ubicacion_id')->unsigned();
+            $table->foreign('ubicacion_id')->references('id')->on('ubicaciones');
             $table->timestamps();
         });
     }

@@ -23,7 +23,6 @@ class CreateNotificacionesTable extends Migration
 
             $table->foreign('by_user_id')->references('id')->on('users');
             $table->foreign('log_id')->references('id')->on('logs');
-            $table->foreign('for_role_id')->references('id')->on('roles');
         });
         Schema::create('notificaciones_vistas', function (Blueprint $table) {
             $table->increments('id');

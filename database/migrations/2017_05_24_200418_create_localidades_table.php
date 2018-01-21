@@ -13,12 +13,14 @@ class CreateLocalidadesTable extends Migration
      */
     public function up()
     {
-        Schema::create('localidades', function (Blueprint $table) {
+        Schema::create('ubicaciones', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('provincia_id')->unsigned();
-            $table->string('nombre', 70);
-
-            $table->foreign('provincia_id')->references('id')->on('provincias');
+            $table->string('formatted_address');
+            $table->string('name');
+            $table->double('lat', 3, 16);
+            $table->double('lng', 3, 16);
+            $table->string('place_id');
+            $table->string('api_id');
             $table->timestamps();
         });
     }
@@ -30,6 +32,6 @@ class CreateLocalidadesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('localidades');
+        Schema::dropIfExists('ubicaciones');
     }
 }

@@ -21,10 +21,10 @@ class CreateUsuariosTable extends Migration
             $table->date('fecha_nac');
             $table->enum('sexo', ['F', 'M']);
             $table->integer('user_id')->unsigned();
-            $table->integer('localidad_id')->unsigned();
+            $table->integer('ubicacion_id')->unsigned();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('localidad_id')->references('id')->on('localidades');
+            $table->foreign('ubicacion_id')->references('id')->on('ubicaciones');
             $table->timestamps();
         });
     }

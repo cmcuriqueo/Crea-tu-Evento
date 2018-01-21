@@ -83,7 +83,17 @@
 
                 
                  <div :class="{'form-group has-feedback': true, 'form-group has-error': errors.has('fecha')&&validar}">
-                    <input name="fecha" v-model="usuario.fecha_nac" type="date" v-validate="'required'" class="form-control" placeholder="Ingresar fecha de nacimiento">
+
+                    <el-date-picker style="width: 100%"
+                        v-model="usuario.fecha_nac"
+                        name="fecha"
+                        data-vv-name="fecha"
+                        v-validate="'required'"
+                        type="date"
+                        :picker-options="pickerOptions"
+                        placeholder="Seleccione su fecha de nacimiento">
+                    </el-date-picker>
+
                     <span class="glyphicon glyphicon-calendar form-control-feedback"></span>
                     <!-- validacion vee-validation -->
                     <span v-show="errors.has('fecha')&&validar" class="help-block">{{ errors.first('fecha') }}</span>
@@ -97,15 +107,24 @@
                  </div>
 
                  <div :class="{'form-group has-feedback': true, 'form-group has-error': errors.has('localidad')&&validar}">
-                    <v-select
-                        :debounce="250" 
-                        :on-search="getOptions" 
-                        :options="localidades"
-                        data-vv-name="localidad"
-                        v-model="usuario.localidad_id" 
+                      <el-select style="width: 100%"
+                        v-model="usuario.localidad_id"
+                        filterable
+                        remote
+                        reserve-keyword
+                        placeholder="Localidad"
+                        :remote-method="getOptions"
                         v-validate="'required'" 
-                        placeholder="Seleccione una localidad">
-                    </v-select>
+                        data-vv-name="localidad"
+                        :loading="loading">
+                        <el-option
+                          v-for="item in localidades"
+                          :key="item.place_id"
+                          :label="item.formatted_address"
+                          :value="item.place_id">
+                        </el-option>
+                      </el-select>
+                      <span class="glyphicon glyphicon glyphicon-map-marker form-control-feedback"></span>
                     <!-- vee-validate-->
                     <span v-show="errors.has('localidad')&&validar" class="help-block">{{ errors.first('localidad') }}</span>
                     <!-- validacion api-->
@@ -114,6 +133,17 @@
                             <p>{{ msj }}</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="form-group has-feedback">
+                    <vue-google-autocomplete
+                        id="map"
+                        ref="address"
+                        classname="form-control"
+                        placeholder="Start typing"
+                        enable-geolocatio1n="true"
+                        v-on:placechanged="getAddressData">
+                    </vue-google-autocomplete>
                 </div>
 
                 <div :class="{'form-group has-feedback': true, 'form-group has-error': errors.has('sexo')&&validar}">
@@ -160,105 +190,126 @@
 </template>
 
 <script>
-import auth from '../../auth.js';
-import router from '../../routes.js';
-import vSelect from "vue-select";
-import { Validator } from 'vee-validate';
+    import auth from '../../auth.js';
+    import router from '../../routes.js';
+    import vSelect from "vue-select";
+    import { Validator } from 'vee-validate';
+    import VueGoogleAutocomplete from 'vue-google-autocomplete'
 
-export default {
-    
-    data() {
-        return {
-            validar: false,
-            name: null,
-            email: null,
-            password: null,
-            password_confirmation: null,
-            error: false,
-            errorsApi: [],
-            localidades: [],
-            usuario: {
-                localidad_id: null,
-                nombre: null,
-                apellido: null,
-                sexo: null,
-                fecha_nac: null,
-                login: true
+    export default {
+        
+        data() {
+            return {
+                validar: false,
+                name: null,
+                email: null,
+                password: null,
+                password_confirmation: null,
+                error: false,
+                errorsApi: [],
+                localidades: [],
+                usuario: {
+                    localidad_id: null,
+                    nombre: null,
+                    apellido: null,
+                    sexo: null,
+                    fecha_nac: null,
+                    login: true
+                },
+                address: '',
+                loading: false,
+                pickerOptions: {
+                    disabledDate: function(date){
+                        const today = new Date();
+                        today.setFullYear(today.getFullYear() - 18);
+                        return date > today;
+                    }
+                }
+            }
+        },
+        components: {vSelect, VueGoogleAutocomplete},
+        mounted() {
+            this.$refs.address.focus();
+        },
+        methods: {
+            /**
+            * When the location found
+            * @param {Object} addressData Data of the found location
+            * @param {Object} placeResultData PlaceResult object
+            * @param {String} id Input container ID
+            */
+            getAddressData: function (addressData, placeResultData, id) {
+                this.address = addressData;
+            },
+            //clear errorsApi
+            clearErrors: function(){
+                this.error = false,
+                this.errorsApi = []     
+            },
+            //send form
+            register: function(){
+                this.$http.post(
+                    'api/register',
+                    {
+                        name: this.usuario.nombre,
+                        email: this.email,
+                        password: this.password,
+                        password_confirmation: this.password_confirmation,
+                        remember: false,
+                        nombre: this.usuario.nombre,
+                        apellido: this.usuario.apellido,
+                        sexo: this.usuario.sexo,
+                        fecha_nac: this.usuario.fecha_nac,
+                        localidad_id: this.usuario.localidad_id.value,
+                        login: true
+                    }
+                ).then(response => {
+      
+                    localStorage.setItem('id_token', response.data.meta.token)
+                    Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('id_token')
+
+                    auth.user.authenticated = true
+                    auth.user.profile = response.data.data
+
+                    router.push({
+                        name: 'home'
+                    })
+                }, response => {
+                        this.error = true //error de 
+                        this.errorsApi = response.body//lista de errores
+                        this.validar = false
+                })
+            },
+            validateBeforeSubmit: function() {
+                this.clearErrors();
+                this.$validator.validateAll().then((result) => {
+                    if (result) {
+                        this.register();
+
+                    } else
+                    {
+                        this.validar = true;
+                    }
+                    return;
+                }).catch(() => {
+
+                });
+
+            },
+            getOptions: function(query) {
+                this. loading = true;
+                this.$http.get('api/localidades/?q='+ query
+                    ).then(response => {
+                        this.localidades = response.data.results;
+                        this.loading = false;
+                    }, response => {this.loading = false;})
+                
+            },
+            redirection: function(){
+                 window.location.href = "http://localhost:8000/redirect";
             }
         }
-    },
-    components: {vSelect},
-    methods: {
-        //clear errorsApi
-        clearErrors: function(){
-            this.error = false,
-            this.errorsApi = []     
-        },
-        //send form
-        register: function(){
-            this.$http.post(
-                'api/register',
-                {
-                    name: this.usuario.nombre,
-                    email: this.email,
-                    password: this.password,
-                    password_confirmation: this.password_confirmation,
-                    remember: false,
-                    nombre: this.usuario.nombre,
-                    apellido: this.usuario.apellido,
-                    sexo: this.usuario.sexo,
-                    fecha_nac: this.usuario.fecha_nac,
-                    localidad_id: this.usuario.localidad_id.value,
-                    login: true
-                }
-            ).then(response => {
-  
-                localStorage.setItem('id_token', response.data.meta.token)
-                Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('id_token')
-
-                auth.user.authenticated = true
-                auth.user.profile = response.data.data
-
-                router.push({
-                    name: 'home'
-                })
-            }, response => {
-                    this.error = true //error de 
-                    this.errorsApi = response.body//lista de errores
-                    this.validar = false
-            })
-        },
-        validateBeforeSubmit: function() {
-            this.clearErrors();
-            this.$validator.validateAll().then((result) => {
-                if (result) {
-                    this.register();
-
-                } else
-                {
-                    this.validar = true;
-                }
-                return;
-            }).catch(() => {
-
-            });
-
-        },
-        getOptions: function(search, loading) {
-            loading(true)
-            this.$http.get('api/localidades/?q='+ search
-                ).then(response => {
-                    this.localidades = response.data.data
-                    loading(false)
-                })
-        },
-        redirection: function(){
-             window.location.href = "http://localhost:8000/redirect";
-        }
     }
-};
-
-
 </script>
 
 

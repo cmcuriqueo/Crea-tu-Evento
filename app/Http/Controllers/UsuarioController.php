@@ -24,7 +24,6 @@ use Activity;
 use Carbon\Carbon;
 use App\Publicacion;
 
-
 class UsuarioController extends Controller
 {  
 
