@@ -86,7 +86,7 @@ class PrestacionController extends Controller
             'calle'=>'max:55',
             'numero'=> 'max:10',
             'piso'=> 'max:10',
-            'localidad_id'=> 'exists:localidades,id'
+            'ubicacion_id'=> 'exists:localidades,id'
         ]);
     }
 
@@ -100,7 +100,7 @@ class PrestacionController extends Controller
                     'calle'=> $request->calle,
                     'numero'=> $request->numero,
                     'piso'=> $request->piso,
-                    'localidad_id'=> $request->localidad_id
+                    'ubicacion_id'=> $request->localidad_id
             ]);
     }
 
@@ -125,7 +125,7 @@ class PrestacionController extends Controller
      */
     public function show($id)
     {
-        $rubro= Prestacion::where('id', $id)->with('rubros','domicilio.localidad.provincia')->firstOrFail();
+        $rubro= Prestacion::where('id', $id)->with('rubros','domicilio.ubicacion')->firstOrFail();
 
         if ($rubro) {
             return response()->json(['rubro' => $rubro], 200);
@@ -198,7 +198,7 @@ class PrestacionController extends Controller
         $proveedor = Proveedor::where('user_id', $id)->firstOrFail();
 
         $rubros = Prestacion::where('proveedor_id', $proveedor->id)
-            ->with('domicilio.localidad.provincia','rubros.caracteristicas')->get();
+            ->with('domicilio.ubicacion','rubros.caracteristicas')->get();
         return response()->json(['rubros' => $rubros], 200);
     }
 

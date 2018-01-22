@@ -275,7 +275,7 @@ class ReservaController extends Controller
      */
     public function show($id)
     {
-        $reserva = Reserva::where('id', $id)->with('publicacion','user','rubros','articulos', 'domicilio.localidad.provincia', 'horario')->firstOrFail();
+        $reserva = Reserva::where('id', $id)->with('publicacion','user','rubros','articulos', 'domicilio.ubicacion', 'horario')->firstOrFail();
         return response()->json($reserva, Response::HTTP_OK);
     }
 

@@ -54,7 +54,7 @@ class ProveedorController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Proveedor::with('user.usuario', 'domicilio.localidad.provincia', 'telefono',
+        $query = Proveedor::with('user.usuario', 'domicilio.ubicacion', 'telefono',
                         'register_by_user.usuario', 'accepted_by_user.usuario', 'rejected_by_user.usuario');
 
         if($request->filter){
@@ -327,7 +327,7 @@ class ProveedorController extends Controller
      */
     public function show($id){
         $proveedor = Proveedor::where('id', $id)
-            ->with('domicilio.localidad.provincia','user.usuario', 'telefono')->firstOrFail();
+            ->with('domicilio.ubicacion','user.usuario', 'telefono')->firstOrFail();
 
         return response()->json(['data' => $proveedor], 200);
     }

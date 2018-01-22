@@ -12,7 +12,7 @@ class Domicilio extends Model
     						'calle', 
     						'numero',
     						'piso',
-    						'localidad_id'
+    						'ubicacion_id'
     					  ];
 
     public function proveedor()
@@ -25,9 +25,9 @@ class Domicilio extends Model
         return $this->hasOne('App\Prestacion');
     }
 
-	public function localidad()
+	public function ubicacion()
     {
-        return $this->belongsTo('App\Localidad');
+        return $this->belongsTo('App\Ubicacion');
     }
 
     public function reservas(){

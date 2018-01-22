@@ -120,7 +120,7 @@ class PasswordController extends Controller
     protected function sendResetResponse($response)
     {
         $user = $request->user();
-        $user->usuario->localidad->provincia;
+        $user->usuario->ubicacion;
         return response()->json(['data' =>  $user, 'csrfToken', csrf_token()], 200);
      //   return redirect($this->redirectPath())
      //                      ->with('status', trans($response));

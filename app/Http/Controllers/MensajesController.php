@@ -42,7 +42,7 @@ class MensajesController extends Controller
         else
             $mensajes = $query->get();
 
-        $mensajes = $this->setCountLectura($mensajes);              
+        $mensajes = $this->setCountLectura($request, $mensajes);              
 
         return response()->json($mensajes, Response::HTTP_OK);
     }
@@ -90,7 +90,7 @@ class MensajesController extends Controller
     {
         $mensaje = Mensaje::where('id', $id)->firstOrFail();
         $reserva = Reserva::where('id', $mensaje->reserva_id)
-                        ->with('publicacion.proveedor.user.usuario','articulos', 'rubros', 'domicilio.localidad.provincia', 'user.usuario.localidad.provincia', 'horario', 'publicacion.proveedor.domicilio.localidad.provincia', 'publicacion.proveedor.telefono')->first();
+                        ->with('publicacion.proveedor.user.usuario','articulos', 'rubros', 'domicilio.ubicacion', 'user.usuario.ubicacion', 'horario', 'publicacion.proveedor.domicilio.ubicacion', 'publicacion.proveedor.telefono')->first();
 
         Mensaje::where('reserva_id', $mensaje->reserva_id)->where('to_user_id', $request->user()->id)->update(['lectura' => true]);
 
@@ -101,7 +101,7 @@ class MensajesController extends Controller
 
         $publicacacionesSugeridas = Publicacion::join('prestaciones', 'prestaciones.id', '=', 'publicaciones.prestacion_id')
             ->join('domicilios', 'domicilios.id', '=', 'prestaciones.domicilio_id')
-            ->with('prestacion.rubros', 'prestacion.domicilio.localidad.provincia', 'proveedor.user.usuario','subcategoria.categoria','fotos', 'caracteristicas', 'favoritos', 'articulos','horarios', 'calificaciones.reserva.user.usuario')
+            ->with('prestacion.rubros', 'prestacion.domicilio.ubicacion', 'proveedor.user.usuario','subcategoria.categoria','fotos', 'caracteristicas', 'favoritos', 'articulos','horarios', 'calificaciones.reserva.user.usuario')
             ->where('publicaciones.estado', 1)
             ->where('domicilios.id', $reserva->publicacion->prestacion->domicilio_id)
             ->where('publicaciones.id', '!=' ,$reserva->publicacion->id)
@@ -123,7 +123,7 @@ class MensajesController extends Controller
         //
     }
 
-    protected function setCountLectura($mensajes){
+    protected function setCountLectura(Request $request, $mensajes){
         $nuevosMensajes = DB::table('mensajes')
             ->join('users', 'mensajes.from_user_id', '=', 'users.id')
             ->join('usuarios', 'usuarios.user_id', '=', 'users.id')

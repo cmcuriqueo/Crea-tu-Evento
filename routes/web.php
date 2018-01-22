@@ -5,8 +5,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/json', 'LocalidadController@searchGooglePlace');
-
+Route::get('/json', 'UbicacionController@searchGooglePlace');
 //login socialite
 Route::get('/redirect','Auth\AuthController@redirect');
 Route::get('/callback','Auth\AuthController@callback');
@@ -14,9 +13,9 @@ Route::get('/callback','Auth\AuthController@callback');
 Route::group(['middleware' => ['api'], 'prefix' => 'api'], function () {
     Route::get('categoria','CategoriaController@index');
     Route::get('subcategoria', 'SubcategoriaController@index');
-    Route::get('localidades', 'LocalidadController@searchGooglePlace');
+    Route::get('localidades', 'UbicacionController@searchGooglePlace');
     
-    Route::get('localidadesAll', 'LocalidadController@index');
+
     Route::post('login', 'Auth\AuthController@login');
     Route::post('logout', 'Auth\AuthController@logout');
 
@@ -70,12 +69,6 @@ Route::group(['middleware' => ['api'], 'prefix' => 'api'], function () {
         Route::get('proveedor/rubro/{id}', 'PrestacionController@show');
         Route::get('proveedor/{id}/rubro', 'PrestacionController@getAll');
 
-        Route::get('localidades/{id}', 'LocalidadController@show');
-        Route::get('provincias', 'LocalidadController@provincias');
-        
-        Route::post('localidad', 'LocalidadController@store');
-        Route::patch('localidad/{id}/edit', 'LocalidadController@update');
-        Route::delete('localidad/{id}', 'LocalidadController@destroy');
         Route::get('roles', 'UsuarioController@roles');
 
         Route::get('busqueda/usuarios', 'UsuarioController@buscarUsuarios');

@@ -16,7 +16,7 @@ class Usuario extends Model
     						'fecha_nac',
                             'sexo',
     						'user_id',
-    						'localidad_id'
+    						'ubicacion_id'
     					  ];
 
 
@@ -26,12 +26,12 @@ class Usuario extends Model
         return $this->belongsTo('App\User');
     }
 
-    public function localidad()
+    public function ubicacion()
     {
-        return $this->belongsTo('App\Localidad');
+        return $this->belongsTo('App\Ubicacion');
     }
 
     public function __toString(){
-    	return 'Imagen:'.$this->avatar.', nombre:'.$this->nombre.', '.$this->apellido.', fecha nacimiento:'.$this->fecha_nac.', sexo:'.$this->sexo.', localidad: '.$this->localidad_id;
+    	return 'Imagen:'.$this->avatar.', nombre:'.$this->nombre.', '.$this->apellido.', fecha nacimiento:'.$this->fecha_nac.', sexo:'.$this->sexo;
     }
 }

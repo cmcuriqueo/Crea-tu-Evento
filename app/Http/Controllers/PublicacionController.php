@@ -50,7 +50,7 @@ class PublicacionController extends Controller
             $query = Publicacion::where('publicaciones.estado', 1 )
                 ->join('prestaciones', 'prestaciones.id', '=', 'publicaciones.prestacion_id')
                 ->join('domicilios', 'prestaciones.domicilio_id', '=', 'domicilios.id')
-                ->join('localidades', 'domicilios.localidad_id', '=', 'localidades.id')
+                ->join('ubicaciones', 'domicilios.ubicacion_id', '=', 'ubicaciones.id')
                 ->join('subcategorias', 'publicaciones.subcategoria_id', '=', 'subcategorias.id')
                 ->join('categorias', 'subcategorias.categoria_id', '=', 'categorias.id')
                 ->select('publicaciones.*')
@@ -59,7 +59,7 @@ class PublicacionController extends Controller
             if($request->has('with_localidad') && $request->with_localidad != ''){
                 $id = $request->with_localidad;
                 $query->where(function($query) use ($id){
-                    $query->where('localidades.id', $id );
+                    $query->where('ubicaciones.id', $id );
                 });
             }
 
@@ -102,7 +102,7 @@ class PublicacionController extends Controller
         }
 
         $query = Publicacion::whereIn('publicaciones.id', $ids)
-            ->with(array('calificaciones' => function($query){$query->where('estado', '=', 1 );}, 'prestacion.proveedor.domicilio.localidad.provincia', 'prestacion.domicilio.localidad.provincia',
+            ->with(array('calificaciones' => function($query){$query->where('estado', '=', 1 );}, 'prestacion.proveedor.domicilio.ubicacion', 'prestacion.domicilio.ubicacion',
              'prestacion.rubros', 'subcategoria.categoria', 'fotos', 'caracteristicas', 'favoritos', 'horarios'))
             ->groupBy('publicaciones.id')
 
@@ -162,12 +162,12 @@ class PublicacionController extends Controller
 
         $publicacion = Publicacion::join('calificaciones', 'calificaciones.publicacion_id', '=', 'publicaciones.id')
             ->where('calificaciones.estado', 1)
-            ->with(array('prestacion.rubros', 'prestacion.domicilio.localidad.provincia', 'proveedor.telefono', 'proveedor.user.usuario', 'proveedor.domicilio.localidad.provincia','subcategoria.categoria','fotos', 'caracteristicas', 'favoritos', 'articulos','horarios', 'calificaciones' => function($query){$query->where('estado', '=', 1 );},'calificaciones.reserva.user.usuario', 'reservas', 'vistas'))
+            ->with(array('prestacion.rubros', 'prestacion.domicilio.ubicacion', 'proveedor.telefono', 'proveedor.user.usuario', 'proveedor.domicilio.ubicacion','subcategoria.categoria','fotos', 'caracteristicas', 'favoritos', 'articulos','horarios', 'calificaciones' => function($query){$query->where('estado', '=', 1 );},'calificaciones.reserva.user.usuario', 'reservas', 'vistas'))
             ->select('publicaciones.*',
                 DB::raw('TRUNCATE(AVG(calificaciones.puntuacion_total), 1) as calificacion'))
                         ->where('publicaciones.id', $id)->firstOrFail();
 
-        $publicacionesProveedor = Publicacion::with('prestacion.rubros', 'prestacion.domicilio.localidad.provincia', 'proveedor.user.usuario','subcategoria.categoria','fotos', 'caracteristicas', 'favoritos', 'articulos','horarios', 'calificaciones.reserva.user.usuario')
+        $publicacionesProveedor = Publicacion::with('prestacion.rubros', 'prestacion.domicilio.ubicacion', 'proveedor.user.usuario','subcategoria.categoria','fotos', 'caracteristicas', 'favoritos', 'articulos','horarios', 'calificaciones.reserva.user.usuario')
             ->where('publicaciones.id', '!=' ,$id)
             ->where('publicaciones.proveedor_id', $publicacion->proveedor_id)
             ->where('publicaciones.estado', 1)->limit(5)->get();
@@ -175,7 +175,7 @@ class PublicacionController extends Controller
 
         $publicacacionesSugeridas = Publicacion::join('prestaciones', 'prestaciones.id', '=', 'publicaciones.prestacion_id')
             ->join('domicilios', 'domicilios.id', '=', 'prestaciones.domicilio_id')
-            ->with('prestacion.rubros', 'prestacion.domicilio.localidad.provincia', 'proveedor.user.usuario','subcategoria.categoria','fotos', 'caracteristicas', 'favoritos', 'articulos','horarios', 'calificaciones.reserva.user.usuario')
+            ->with('prestacion.rubros', 'prestacion.domicilio.ubicacion', 'proveedor.user.usuario','subcategoria.categoria','fotos', 'caracteristicas', 'favoritos', 'articulos','horarios', 'calificaciones.reserva.user.usuario')
             ->where('publicaciones.estado', 1)
             ->where('domicilios.id', $publicacion->prestacion->domicilio_id)
             ->where('publicaciones.id', '!=' ,$id)
@@ -377,7 +377,7 @@ class PublicacionController extends Controller
     public function publicacionesProveedor(Request $request, $idProveedor)
     {
 
-        $query = Publicacion::with('proveedor', 'prestacion.rubros', 'subcategoria.categoria', 'fotos', 'prestacion.domicilio.localidad.provincia', 'caracteristicas', 'calificaciones')
+        $query = Publicacion::with('proveedor', 'prestacion.rubros', 'subcategoria.categoria', 'fotos', 'prestacion.domicilio.ubicacion', 'caracteristicas', 'calificaciones')
             ->where('proveedor_id', $idProveedor);
 
         if($request->has('with_estado') && ($request->with_estado == 0 || $request->with_estado == 1))

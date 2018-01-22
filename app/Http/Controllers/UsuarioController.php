@@ -95,7 +95,7 @@ class UsuarioController extends Controller
     {
        
         $usuario = Usuario::where('user_id', $id)
-            ->with('localidad.provincia', 'user.role', 'user.proveedor.prestaciones.domicilio', 'user.proveedor.domicilio.localidad.provincia','user.proveedor.publicaciones', 'user.proveedor.prestaciones', 'user.proveedor.telefono')
+            ->with('ubicacion', 'user.role', 'user.proveedor.prestaciones.domicilio', 'user.proveedor.domicilio.ubicacion','user.proveedor.publicaciones', 'user.proveedor.prestaciones', 'user.proveedor.telefono')
                 ->firstOrFail();
 
         if (Gate::allows('show-profile', $usuario)) {
@@ -341,7 +341,7 @@ class UsuarioController extends Controller
     {
         $query = Proveedor::where('accepted_by_user_id', $id)
             ->orWhere('rejected_by_user_id', $id)
-            ->orderBy('created_at', 'DESC')->with('user.usuario', 'domicilio.localidad.provincia');
+            ->orderBy('created_at', 'DESC')->with('user.usuario', 'domicilio.ubicacion');
 
         if( $request->has('page') || $request->has('per_page') ) {
             $proveedores = $query->paginate(10);
@@ -355,7 +355,7 @@ class UsuarioController extends Controller
     public function proveedoresByOperador(Request $request, $id)
     {
         $query = Proveedor::where('register_by_user_id', $id)
-            ->orderBy('created_at', 'DESC')->with('user.usuario', 'domicilio.localidad.provincia');
+            ->orderBy('created_at', 'DESC')->with('user.usuario', 'domicilio.ubicacion');
         if( $request->has('page') || $request->has('per_page') ) {
             $proveedores = $query->paginate(10);
         }

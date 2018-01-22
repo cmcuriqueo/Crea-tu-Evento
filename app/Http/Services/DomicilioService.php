@@ -15,8 +15,8 @@ class DomicilioService
             'calle'=> $request->calle,
             'numero'=> $request->numero,
             'piso'=> $request->piso,
-            'localidad_id'=> $request->localidad_id
-            ]);
+            'ubicacion_id'=> $request->localidad_id
+        ]);
     }
 
     public function updateDomicilio($request, $domicilio){
@@ -24,7 +24,7 @@ class DomicilioService
             'calle' => $request->calle,
             'numero' => $request->numero,
             'piso' => $request->piso,
-            'localidad_id' => $request->localidad_id
+            'ubicacion_id' => $request->localidad_id
         ]);
     }
 
@@ -33,8 +33,8 @@ class DomicilioService
         return $this->validate($request, [
             'numero' => 'required|min:1|max:10',
             'calle' =>'required|min:1',
-            'localidad_id'=> 'required|exists:localidades,id'
-            ]);
+            'ubicacion_id'=> 'required|exists:localidades,id'
+        ]);
     }
 
 }

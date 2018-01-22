@@ -50,7 +50,7 @@ class User extends Authenticatable
     }
 
     public function role(){
-        return $this->belongsTo('App\Models\Role');
+        return $this->belongsTo('App\Role');
     }
 
     public function scopePassword($query, $password){

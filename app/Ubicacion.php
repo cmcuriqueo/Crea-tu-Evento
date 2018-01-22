@@ -4,25 +4,17 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Localidad extends Model
+class Ubicacion extends Model
 {
-    protected $table = 'localidades';
+    protected $table = 'ubicaciones';
     
-    protected $fillable = [ 
-                            'provincia_id', 
-    						'nombre'
-    					  ];
+    protected $fillable = ['formatted_address', 'locality', 'administrative_area_level_2', 'administrative_area_level_1', 'country', 'name', 'lat', 'lng', 'place_id','api_id'  ];
 
 
     ///RELACIONES//
     public function usuario()
     {
         return $this->hasOne('App\Usuario');
-    }
-
-    public function provincia()
-    {
-        return $this->belongsTo('App\Provincia');
     }
 
     public function domicilios()
