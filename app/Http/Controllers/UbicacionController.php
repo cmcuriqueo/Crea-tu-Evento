@@ -11,9 +11,9 @@ use App\Provincia;
 class UbicacionController extends Controller
 {
 
-    //https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJN5Yawx9XAb4RDAWDZCuyxlc&key=AIzaSyBwWqco7BXjvq5FCCIxqm9goTuOI7U6smI
+    //https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJN5Yawx9XAb4RDAWDZCuyxlc&key=
 
-    //https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJMck6uHpWAb4RI7lrfZFHv4Q&key=AIzaSyBwWqco7BXjvq5FCCIxqm9goTuOI7U6smI
+    //https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJMck6uHpWAb4RI7lrfZFHv4Q&key=
     public function searchGooglePlace(Request $request){
 
         $filter = str_replace ( ' ' , '%' , $request->q );
