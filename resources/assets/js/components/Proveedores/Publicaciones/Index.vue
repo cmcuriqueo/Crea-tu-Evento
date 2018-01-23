@@ -38,7 +38,7 @@
                         </div>
                         <div class="col-sm-12">
                             <div class="col-sm-8">
-                                <p><h6>{{item.prestacion.domicilio.localidad.provincia.nombre}} - {{item.prestacion.domicilio.localidad.nombre}}</h6></p>
+                                <p><h6>{{item.prestacion.domicilio.ubicacion.formatted_address }}</h6></p>
                             </div>
                             <div class="col-sm-4" v-if="item.calificacion > 0">
                                 <el-rate
@@ -61,7 +61,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12" v-if="optionsProveedor && auth.user.profile.roles_id == role.PROVEEDOR && 
+                    <div class="col-sm-12" v-if="optionsProveedor && auth.checkRole(role.PROVEEDOR) && 
                                 item.proveedor.user_id == auth.user.profile.id">
                         <div style="text-align:center">
                             <div class="btn-group" >

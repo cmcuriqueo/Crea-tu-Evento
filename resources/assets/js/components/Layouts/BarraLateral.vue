@@ -32,9 +32,9 @@
                     <!--  Administracion -->
        
                     <li class="treeview" 
-                        v-if="auth.user.profile.roles_id == role.ADMINISTRADOR || 
-                            auth.user.profile.roles_id == role.SUPERVISOR ||
-                            auth.user.profile.roles_id == role.OPERADOR">
+                        v-if="auth.checkRole(role.ADMINISTRADOR) || 
+                            auth.checkRole(role.SUPERVISOR) ||
+                            auth.checkRole(role.OPERADOR)">
                         
                         <a href="#">
                             <i class="fa fa-dashboard"></i>
@@ -46,8 +46,8 @@
                         <ul class="treeview-menu">
 
                             <router-link 
-                                v-if="auth.user.profile.roles_id == role.ADMINISTRADOR ||
-                                auth.user.profile.roles_id == role.SUPERVISOR"
+                                v-if="auth.checkRole(role.ADMINISTRADOR) ||
+                                auth.checkRole(role.SUPERVISOR)"
                                 tag="li" 
                                 to="/usuario">
                                 <a>
@@ -56,9 +56,9 @@
                             </router-link>
 
                             <router-link
-                                v-if="auth.user.profile.roles_id == role.ADMINISTRADOR ||
-                                    auth.user.profile.roles_id == role.SUPERVISOR ||
-                                    auth.user.profile.roles_id == role.OPERADOR" 
+                                v-if="auth.checkRole(role.ADMINISTRADOR) ||
+                                    auth.checkRole(role.SUPERVISOR) ||
+                                    auth.checkRole(role.OPERADOR)" 
                                     tag="li"
                                     to="/proveedores">
                                     <a>
@@ -67,8 +67,8 @@
                             </router-link>
 
                             <router-link
-                                v-if="auth.user.profile.roles_id == role.ADMINISTRADOR ||
-                                    auth.user.profile.roles_id == role.SUPERVISOR"
+                                v-if="auth.checkRole(role.ADMINISTRADOR) ||
+                                    auth.checkRole(role.SUPERVISOR)"
                                     tag="li"
                                     to="/categorias">
                                         <a>
@@ -77,8 +77,8 @@
                             </router-link>
 
                             <router-link
-                                v-if="auth.user.profile.roles_id == role.ADMINISTRADOR ||
-                                    auth.user.profile.roles_id == role.SUPERVISOR"
+                                v-if="auth.checkRole(role.ADMINISTRADOR) ||
+                                    auth.checkRole(role.SUPERVISOR)"
                                     tag="li"
                                     to="/rubros">
                                         <a>
@@ -87,8 +87,8 @@
                             </router-link>
 
                             <router-link
-                                v-if="auth.user.profile.roles_id == role.ADMINISTRADOR ||
-                                    auth.user.profile.roles_id == role.SUPERVISOR"
+                                v-if="auth.checkRole(role.ADMINISTRADOR) ||
+                                    auth.checkRole(role.SUPERVISOR)"
                                     tag="li"
                                     to="/caracteristicas">
                                         <a>
@@ -97,8 +97,8 @@
                             </router-link>
 
                               <router-link
-                                v-if="auth.user.profile.roles_id == role.ADMINISTRADOR ||
-                                    auth.user.profile.roles_id == role.SUPERVISOR"
+                                v-if="auth.checkRole(role.ADMINISTRADOR) ||
+                                    auth.checkRole(role.SUPERVISOR)"
                                     tag="li"
                                     to="/localidades">
                                         <a>
@@ -108,9 +108,9 @@
                         </ul>
                     </li>
                     <li class="treeview" 
-                        v-if="auth.user.profile.roles_id == role.ADMINISTRADOR || 
-                            auth.user.profile.roles_id == role.SUPERVISOR ||
-                            auth.user.profile.roles_id == role.OPERADOR">
+                        v-if="auth.checkRole(role.ADMINISTRADOR) || 
+                            auth.checkRole(role.SUPERVISOR) ||
+                            auth.checkRole(role.OPERADOR)">
                         
                         <a href="#">
                             <i class="fa fa-dashboard"></i>
@@ -122,8 +122,8 @@
                         <ul class="treeview-menu">
 
                             <router-link 
-                                v-if="auth.user.profile.roles_id == role.ADMINISTRADOR ||
-                                auth.user.profile.roles_id == role.SUPERVISOR"
+                                v-if="auth.checkRole(role.ADMINISTRADOR) ||
+                                auth.user.checkRole(role.SUPERVISOR)"
                                 tag="li" 
                                 to="/terminos-condiciones/new">
                                 <a>
@@ -132,9 +132,9 @@
                             </router-link>
 
                             <router-link
-                                v-if="auth.user.profile.roles_id == role.ADMINISTRADOR ||
-                                    auth.user.profile.roles_id == role.SUPERVISOR ||
-                                    auth.user.profile.roles_id == role.OPERADOR" 
+                                v-if="auth.checkRole(role.ADMINISTRADOR) ||
+                                    auth.checkRole(role.SUPERVISOR) ||
+                                    auth.checkRole(role.OPERADOR)" 
                                     tag="li"
                                     to="/terminos-condiciones/edit">
                                     <a>
@@ -155,24 +155,24 @@
                     </li>
 
                     <!-- Proveedores-->
-                    <li class="treeview" v-if="auth.user.profile.roles_id == role.PROVEEDOR">
-                        <a v-if="auth.user.profile.roles_id == role.PROVEEDOR" style="cursor: pointer">
+                    <li class="treeview" v-if="auth.checkRole(role.PROVEEDOR)">
+                        <a v-if="auth.checkRole(role.PROVEEDOR)" style="cursor: pointer">
                             <i class="fa fa-dashboard"></i>
                             <span>Agregar</span>
                             <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                             </span>
                         </a>
-                        <ul class="treeview-menu" v-if="auth.user.profile.roles_id == role.PROVEEDOR">
+                        <ul class="treeview-menu" v-if="auth.checkRole(role.PROVEEDOR)">
                             <li>
-                                <a v-if="auth.user.profile.roles_id == role.PROVEEDOR" @click="goToNewPublicacion()" style="cursor: pointer">
+                                <a v-if="auth.checkRole(role.PROVEEDOR)" @click="goToNewPublicacion()" style="cursor: pointer">
                                     <i class="fa fa-plus"></i> <span> Publicaci&oacute;n</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
 
-                    <li v-if="auth.user.profile.roles_id == role.PROVEEDOR || auth.user.profile.roles_id == role.USUARIO">
+                    <li v-if="auth.checkRole(role.PROVEEDOR) || auth.checkRole(role.USUARIO)">
                         <router-link to="/mensajes" tag="a">
                             <i class="fa fa-envelope-o"></i> <span>Reservas</span>
                             <span class="pull-right-container" 
@@ -188,7 +188,7 @@
                                 <el-tooltip class="item" effect="dark" 
                                     content="Fechas de presupuestos que deben de ser actualizadas." placement="top-start">
                                     <small class="label pull-right bg-red" 
-                                        v-if="mensajesPorActulizar > 0 && auth.user.profile.roles_id == role.USUARIO">
+                                        v-if="mensajesPorActulizar > 0 && auth.checkRole(role.USUARIO)">
                                         {{mensajesPorActulizar}}
                                     </small>
                                 </el-tooltip>
@@ -204,7 +204,7 @@
                         </router-link>
                     </li>
 
-                    <li v-if="auth.user.profile.roles_id == role.PROVEEDOR">
+                    <li v-if="auth.checkRole(role.PROVEEDOR)">
                         <router-link to="/reservas" tag="a">
                             <i class="fa fa-calendar"></i> <span>Calendar</span>
                             <span class="pull-right-container" v-if="eventosProximaSemana > 0">
@@ -218,7 +218,7 @@
                         </router-link>
                     </li>
 
-                    <li class="treeview" v-if="auth.user.profile.roles_id != role.USUARIO">
+                    <li class="treeview" v-if="!auth.checkRole(role.USUARIO)">
                           <router-link to="/estadisticas" tag="a">
                             <i class="fa fa-line-chart"></i>
                             <span>Estadisticas</span>
@@ -316,7 +316,7 @@
                 //this.$events.fire('searchPublicacion', this.q);
             },
             getReservas(){
-                if(auth.user.profile.roles_id == this.role.PROVEEDOR){
+                if(auth.checkRole(this.role.PROVEEDOR)){
                     var url = 'api/proveedor/me/reserva';
                     this.eventosProximaSemana = 0;
                     this.$http.get(url).then(response => {

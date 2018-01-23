@@ -14,8 +14,9 @@ export default {
             ).then(response => {
                 this.user.authenticated = true
                 this.user.profile = response.data.data
-                return true;
+                
             })
+            return true;
         } else {
         	return false;
         }
@@ -24,5 +25,12 @@ export default {
         localStorage.removeItem('id_token')
         this.user.authenticated = false
         this.user.profile = null
+    },
+    checkRole(role){
+        if(localStorage.getItem('id_token') === null) return false;
+        for (let rol of this.user.profile.roles){
+            if(rol.id === role) return true;
+        }
+        return false;
     }
 }

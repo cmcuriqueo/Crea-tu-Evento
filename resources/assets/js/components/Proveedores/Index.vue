@@ -48,8 +48,8 @@
                                             <button 
                                                 v-if="(props.rowData.estado === 'Tramite' ||
                                                         props.rowData.estado === 'Baja') &&
-                                                        (role.ADMINISTRADOR == auth.user.profile.roles_id ||
-                                                        role.SUPERVISOR == auth.user.profile.roles_id)" 
+                                                        (auth.checkRole(role.ADMINISTRADOR) ||
+                                                        auth.checkRole(role.SUPERVISOR) )" 
                                                         class="btn-xs btn-default"
                                                 @click="onActionEstado('Aprobado', props.rowData)">
                                                 <i class="fa fa-check"></i> Aprobar
@@ -58,8 +58,8 @@
                                             <!-- Rechazar a proveedor -->
                                             <button 
                                                 v-if="props.rowData.estado === 'Tramite' &&
-                                                    (role.ADMINISTRADOR == auth.user.profile.roles_id ||
-                                                    role.SUPERVISOR == auth.user.profile.roles_id)" 
+                                                    (auth.checkRole(role.ADMINISTRADOR) ||
+                                                    auht.checkRole(role.SUPERVISOR))" 
                                                 class="btn-xs btn-default"
                                                 @click="showModalObservation = true, action = 'Rechazado', dataUser = props.rowData">
                                                 <i class="fa fa-close"></i> Rechazar
@@ -68,8 +68,8 @@
                                             <!-- Baja a proveedor  -->
                                             <button 
                                                 v-if="props.rowData.estado === 'Aprobado' &&
-                                                    (role.ADMINISTRADOR == auth.user.profile.roles_id ||
-                                                    role.SUPERVISOR == auth.user.profile.roles_id)" 
+                                                    (auth.checkRole(role.ADMINISTRADOR) ||
+                                                    auth.checkRole(role.SUPERVISOR))" 
                                                 class="btn-xs btn-default"
                                                 @click="showModalObservation = true, action = 'Baja', dataUser = props.rowData">
                                                 <i class="fa fa-close"></i> Baja

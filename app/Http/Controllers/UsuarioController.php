@@ -58,9 +58,9 @@ class UsuarioController extends Controller
             $queryUser = $queryUser->whereIn('id', $usuario);
         }
         if( $request->has('page') || $request->has('per_page') ) 
-            $users = $queryUser->with('usuario', 'role')->paginate(10);
+            $users = $queryUser->with('usuario', 'roles')->paginate(10);
         else
-            $users = $queryUser->with('usuario', 'role')->get();
+            $users = $queryUser->with('usuario', 'roles')->get();
         return response()->json($users);
     }
 
@@ -95,7 +95,7 @@ class UsuarioController extends Controller
     {
        
         $usuario = Usuario::where('user_id', $id)
-            ->with('ubicacion', 'user.role', 'user.proveedor.prestaciones.domicilio', 'user.proveedor.domicilio.ubicacion','user.proveedor.publicaciones', 'user.proveedor.prestaciones', 'user.proveedor.telefono')
+            ->with('ubicacion', 'user.roles', 'user.proveedor.prestaciones.domicilio', 'user.proveedor.domicilio.ubicacion','user.proveedor.publicaciones', 'user.proveedor.prestaciones', 'user.proveedor.telefono')
                 ->firstOrFail();
 
         if (Gate::allows('show-profile', $usuario)) {

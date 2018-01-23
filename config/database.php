@@ -106,10 +106,15 @@ return [
     */
 
     'redis' => [
-        'driver' => 'redis',
-        'connection' => 'default',
-        'queue' => '{default}',
-        'retry_after' => 90,
+
+        'cluster' => false,
+
+        'default' => [
+            'host'     => '127.0.0.1',
+            'port'     => 6379,
+            'database' => 0,
+        ],
+
     ],
 
 ];

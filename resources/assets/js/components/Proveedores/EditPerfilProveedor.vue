@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="col-sm-4">
-            <button type="button" class="btn-block" @click="showModificar = true">
+            <button type="button" class="btn btn-block btn-primary" @click="showModificar = true">
                 Modificar Informaci&oacute;n de Proveedor
             </button>
         </div>

@@ -8,7 +8,7 @@
 		    <div class="box box-primary">
 		    	<div class="box-header" v-if="auth.user.authenticated">
 				    <div class="col-sm-12" v-if="
-				    	auth.user.profile.roles_id == role.PROVEEDOR && 
+				    	auth.checkRole(role.PROVEEDOR) && 
 				    	publicacion.proveedor.user_id == auth.user.profile.id" >
 						<button class="btn btn-primary pull-left" @click="goToNewPublicacion()">Nueva Publicaci&oacute;n</button>
 
@@ -97,8 +97,7 @@
 							          		<i class="fa fa-map-marker" aria-hidden="true"></i> <strong>Ubicacion</strong>
 							          	</p>
 							          	<p>
-							          		<strong>Ciudad </strong>{{ publicacion.prestacion.domicilio.localidad.nombre }} -
-							          		{{ publicacion.prestacion.domicilio.localidad.provincia.nombre }}
+							          		<strong>Ciudad </strong>{{ publicacion.prestacion.domicilio.ubicacion.formatted_address }}
 							          	</p>
 							          	<p>
 											<strong>Calle </strong>{{ publicacion.prestacion.domicilio.calle}}<strong> Nro </strong>{{ publicacion.prestacion.domicilio.numero}}
@@ -109,8 +108,7 @@
 							          		<i class="fa fa-map-marker" aria-hidden="true"></i> <strong>Ubicacion</strong>
 							          	</p>
 							          	<p>
-							          		<strong>Ciudad </strong>{{ publicacion.proveedor.domicilio.localidad.nombre }} -
-							          		{{ publicacion.proveedor.domicilio.localidad.provincia.nombre }}
+							          		<strong>Ciudad </strong>{{ publicacion.proveedor.domicilio.ubicacion.formatted_address }}
 							          	</p>
 							          	<p>
 											<strong>Calle </strong>{{ publicacion.proveedor.domicilio.calle }}<strong> Nro </strong>{{ publicacion.proveedor.domicilio.numero}}
@@ -137,7 +135,7 @@
 
 									        <button type="button" class="btn btn-block btn-success" @click.prevent="showPresupuestoModal()"
 									        	v-if="!auth.user.authenticated ||
-							                	(auth.user.authenticated && !(auth.user.profile.roles_id != role.USUARIO))">
+							                	(auth.user.authenticated && auth.checkRole(role.USUARIO))">
 									        	<i class="fa fa-calendar-check-o" aria-hidden="true"> Solicitar Presupuesto</i> 	
 									        </button>
 
@@ -159,8 +157,8 @@
 					<li><a href="#opiniones" @click.prevent data-toggle="tab" v-if="publicacion.calificaciones.length > 0">
 						Opiniones</a>
 					</li>
-					<li v-if="auth.user.authenticated && ((auth.user.profile.roles_id == role.PROVEEDOR && 
-				    	publicacion.proveedor.user_id == auth.user.profile.id) || auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR)"><a href="#proveedor" @click.prevent data-toggle="tab">Eventos y Estadisticas</a>
+					<li v-if="auth.user.authenticated && ((auth.checkRole(role.PROVEEDOR) && 
+				    	publicacion.proveedor.user_id == auth.user.profile.id) || auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR))"><a href="#proveedor" @click.prevent data-toggle="tab">Eventos y Estadisticas</a>
 				    </li>
 				</ul>
 				<div class="tab-content">
@@ -217,7 +215,7 @@
              					<div v-for="(calificacion, index) in publicacion.calificaciones" v-if="index <= quantityCalificaciones">
 								    <div class="col-sm-12">
 								    	<hr v-if="index > 0">
-								    	<div class="pull-right" v-if="calificacion.reportado == false && auth.user.authenticated && (auth.user.profile.roles_id == role.PROVEEDOR)">
+								    	<div class="pull-right" v-if="calificacion.reportado == false && auth.checkRole(role.PROVEEDOR)">
 											<el-dropdown @command="handleCommand">
 												<span class="el-dropdown-link">
 													<i class="el-icon-arrow-down el-icon--right"></i>
@@ -227,7 +225,7 @@
 												</el-dropdown-menu>
 											</el-dropdown>
 								    	</div>
-								    	<div class="pull-right" v-if="auth.user.authenticated && (auth.user.profile.roles_id == role.SUPERVISOR || auth.user.profile.roles_id == role.ADMINISTRADOR)">
+								    	<div class="pull-right" v-if="auth.checkRole(role.SUPERVISOR) || auth.checkRole(role.ADMINISTRADOR)">
 											<el-dropdown @command="handleCommandDelete">
 												<span class="el-dropdown-link">
 													<i class="el-icon-arrow-down el-icon--right"></i>
@@ -307,8 +305,8 @@
              			</div>
              		</div>
 
-             		<div v-if="auth.user.authenticated && ((auth.user.profile.roles_id == role.PROVEEDOR && 
-				    	publicacion.proveedor.user_id == auth.user.profile.id) || auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR)" class="tab-pane" id="proveedor">
+             		<div v-if="auth.user.authenticated && ((auth.checkRole(role.PROVEEDOR) && 
+				    	publicacion.proveedor.user_id == auth.user.profile.id) || auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR))" class="tab-pane" id="proveedor">
 				    	<div class="box-body">
 				    		<div class="row">
 					    		<div class="col-sm-12">
@@ -399,7 +397,7 @@
              	</div>
             </div>
 
-            <div class="box box-default" v-if="publicacacionesProveedor.length > 0 && (!auth.user.authenticated || (auth.user.authenticated && auth.user.profile.roles_id != role.PROVEEDOR))">
+            <div class="box box-default" v-if="publicacacionesProveedor.length > 0 && (!auth.user.authenticated || !auth.checkRole(role.PROVEEDOR))">
             	<div class="box-header with-border">
             		<h3 class="box-title">Más publicaciones del proveedor</h3>
             	</div>
@@ -422,7 +420,7 @@
 					</div>
             	</div>
             </div>
-            <div class="box box-default" v-if="publicacacionesSugeridas.length > 0 && (!auth.user.authenticated || (auth.user.authenticated && auth.user.profile.roles_id != role.PROVEEDOR))">
+            <div class="box box-default" v-if="publicacacionesSugeridas.length > 0 && (!auth.user.authenticated || auth.checkRole(role.PROVEEDOR))">
             	<div class="box-header with-border">
             		<h3 class="box-title">Publicaciones Sugeridas</h3>
             	</div>

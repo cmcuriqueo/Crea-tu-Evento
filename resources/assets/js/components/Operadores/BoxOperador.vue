@@ -88,7 +88,7 @@
 				        dataClass: 'text-center'           
 				    },
 				    {
-				        name: 'domicilio.localidad.nombre',
+				        name: 'domicilio.ubicacion.name',
 				        title: 'Ubicacion',
 				        titleClass: 'text-center',
 				        dataClass: 'text-center'           

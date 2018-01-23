@@ -39,7 +39,7 @@ class AuthController extends Controller
             $meta = [];
 
             $meta['token'] = $token;
-            $user = User::where('id', $request->user()->id)->with('usuario.ubicacion', 'role')->first();
+            $user = User::where('id', $request->user()->id)->with('usuario.ubicacion', 'roles')->first();
 
             if ($user->estado != 2){
                 if(!$user->estado) $user->alta();
@@ -95,7 +95,7 @@ class AuthController extends Controller
             return response()->json(['token_absent'], $e->getStatusCode());
 
         }
-        $user = User::where('id', $user->id)->with('usuario.ubicacion', 'role')->first();
+        $user = User::where('id', $user->id)->with('usuario.ubicacion', 'roles')->first();
         $meta = [];
         $token = JWTAuth::getToken();
         $meta['token'] = $token;

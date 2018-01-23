@@ -21,6 +21,6 @@ Vue.http.interceptors.push((request, next) => {
 });
 
 window.axios.defaults.headers.common = {
-	'X-Requested-With': 'XMLHttpRequest'
+	'X-Requested-With': 'XMLHttpRequest',
+	'Authorization': 'Bearer ' + localStorage.getItem('id_token')
 };
-

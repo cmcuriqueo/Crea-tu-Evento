@@ -49,8 +49,9 @@ class User extends Authenticatable
         return $this->belongsTo('App\Reserva');
     }
 
-    public function role(){
-        return $this->belongsTo('App\Role');
+    public function roles()
+    {
+        return $this->belongsToMany('App\Role');
     }
 
     public function scopePassword($query, $password){

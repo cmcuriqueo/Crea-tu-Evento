@@ -120,7 +120,7 @@
         },
         created(){
 
-            if(auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR)
+            if(auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR))
                 this.moreParams = {'user_id' : this.$route.params.userId }
 
         },
@@ -164,12 +164,12 @@
         },
         computed: {
             roleProveedor(){
-                if(auth.user.authenticated && (auth.user.profile.roles_id == role.PROVEEDOR))
+                if(auth.user.authenticated && (auth.checkRole(role.PROVEEDOR)))
                     return true;
                 return false;
             },
             roleAdminOrSuper(){
-                if(auth.user.authenticated && (auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR))
+                if(auth.user.authenticated && (auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR)))
                     return true;
                 return false;
             }

@@ -260,7 +260,7 @@ let routes = [
 function guardRoute (to, from, next) 
 {
  	if (!auth.check()) {
- 		if( !checkAuth() && to.matched.some(record => record.meta.requiresAuth)){
+ 		if(to.matched.some(record => record.meta.requiresAuth)){
  			//se redirecciona al usuario al login si no esta autenticado
 			next('/login');
 		} else{
@@ -318,7 +318,7 @@ function checkRole(to, from, next){
 		let match = false;
 		for (let rol of to.meta.Role){
 			//Se compara el rol del usuario con el los reoles requeridos para acceder
-			if(rol == auth.user.profile.roles_id){
+			if(auth.checkRole(rol)){
 				match= true;
 				break;
 			}

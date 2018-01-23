@@ -47,7 +47,7 @@
             </p>
             <p class="inline-block">
                 <label>Ubicaci&oacute;n: </label>
-                <span>{{rowData.domicilio.localidad.nombre}}-{{rowData.domicilio.localidad.provincia.nombre}}</span>
+                <span>{{rowData.domicilio.ubicacion.formatted_address}}</span>
             </p>
         </div>
         <div class="col-sm-offset-3 col-sm-9" v-if="rowData.observaciones != null && rowData.observaciones != ''">

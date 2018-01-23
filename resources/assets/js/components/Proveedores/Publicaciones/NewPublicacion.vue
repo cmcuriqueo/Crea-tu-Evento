@@ -173,8 +173,8 @@
 	        		this.publicacion.fecha_finalizacion = null
 	        	}
 	        	var localidad_id = null;
-	        	if(this.domicilio.localidad_id != null){
-	        		localidad_id = this.domicilio.localidad_id.value;
+	        	if(this.domicilio.ubicacion_id != null){
+	        		localidad_id = this.domicilio.ubicacion.place_id;
 	        	}
 	            this.$http.post(
 	                'api/publicacion/', 

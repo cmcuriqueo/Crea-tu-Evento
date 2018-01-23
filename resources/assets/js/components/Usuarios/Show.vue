@@ -6,9 +6,9 @@
                 <template v-if="usuario.apellido != null && usuario.apellido != ''">{{usuario.apellido}}, </template><template v-if="usuario.nombre != null && usuario.nombre != ''">{{usuario.nombre}}</template>
             </p>
 
-            <p v-if='usuario.localidad_id != null'>
+            <p v-if='usuario.ubicacion_id != null'>
                 <b>Localidad: </b>
-                    {{usuario.localidad.nombre}} - {{usuario.localidad.provincia.nombre}}
+                    {{usuario.ubicacion.formatted_address}}
             </p>
         
             <p>
@@ -42,7 +42,7 @@
             </p>
             <p>
                 <b>Ubicaci&oacute;n: </b>
-                {{usuario.user.proveedor.domicilio.localidad.nombre}} - {{usuario.user.proveedor.domicilio.localidad.provincia.nombre}}<br>
+                {{usuario.user.proveedor.domicilio.ubicacion.formatted_address}}<br>
                 <b>Calle: </b>{{ usuario.user.proveedor.domicilio.calle }}  <b>Numero: </b>{{ usuario.user.proveedor.domicilio.numero }}  <b>Piso: </b>{{ usuario.user.proveedor.domicilio.piso }}
             </p>
         </div>

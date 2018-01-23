@@ -71,8 +71,8 @@
 	            this.$events.fire('validarFormPresupuesto')
 	        },
 	        sendForm: function(){
-	        	if(this.domicilio.localidad_id != null){
-	        		var localidad_id = this.domicilio.localidad_id.value;
+	        	if(this.domicilio.ubicacion_id != null){
+	        		var localidad_id = this.domicilio.ubicacion_id;
 	        	}
 	        	var data = {
                 	rubros: this.presupuesto.rubros,

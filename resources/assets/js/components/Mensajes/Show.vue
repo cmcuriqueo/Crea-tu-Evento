@@ -64,7 +64,7 @@
 							</template>
 
 							<div class="col-sm-12">
-								<template v-if="role.USUARIO == auth.user.profile.roles_id">
+								<template v-if="auth.checkRole(role.USUARIO)">
 									<template v-if="presupuesto.presupuestado == 0 && isAfterNow(presupuesto.fecha) && presupuesto.estado == 'presupuesto'">
 										<hr>
 										<div class="callout callout-success">
@@ -79,7 +79,7 @@
 							      </div>
 									</template>
 								</template>
-								<template v-if="role.PROVEEDOR == auth.user.profile.roles_id">
+								<template v-if="auth.checkRole(role.PROVEEDOR)">
 									<template v-if="!isAfterNow(presupuesto.fecha) && presupuesto.estado != 'confirmado'">
 										<hr>
 										<div class="callout callout-warning">
@@ -122,32 +122,32 @@
 							<div style="text-align: center;">
 								<!-- boton de modificacion de proveedor-->
 			            		<button class="btn btn-sm btn-primary btn-flat" 
-			            			v-if="role.PROVEEDOR == auth.user.profile.roles_id && presupuesto.estado != 'reservado' && presupuesto.estado != 'cancelado' && presupuesto.estado != 'confirmado' && isAfterNow(presupuesto.fecha)"
+			            			v-if="auth.checkRole(role.PROVEEDOR) && presupuesto.estado != 'reservado' && presupuesto.estado != 'cancelado' && presupuesto.estado != 'confirmado' && isAfterNow(presupuesto.fecha)"
 			            			@click.prevent="getPublicacion('presupuesto')" :disabled="!presupuesto.publicacion.estado">
 			            			Modificar Presupuesto
 			            		</button>
 
 								<!-- boton de modificacion de usuario-->
 			            		<button class="btn btn-sm btn-default btn-fla" 
-			            			v-if="role.USUARIO == auth.user.profile.roles_id &&presupuesto.estado == 'presupuesto'"
+			            			v-if="auth.checkRole(role.USUARIO) &&presupuesto.estado == 'presupuesto'"
 			            			@click.prevent="getPublicacion('modificar')" :disabled="!presupuesto.publicacion.estado">
 			            			Modificar
 			            		</button>
 								<!-- boton de reserva de usuario-->
 			            		<button class="btn btn-sm btn-primary btn-fla" 
-			            			v-if="role.USUARIO == auth.user.profile.roles_id && presupuesto.estado == 'presupuesto' &&presupuesto.presupuestado && isAfterNow(presupuesto.fecha)"
+			            			v-if="auth.checkRole(role.USUARIO) && presupuesto.estado == 'presupuesto' &&presupuesto.presupuestado && isAfterNow(presupuesto.fecha)"
 			            			@click.prevent="changeEstadoPresupuesto('reservado')" :disabled="!presupuesto.publicacion.estado">
 			            			Reservar
 			            		</button>
 								<!-- boton de confirmacion reserva de usuario-->
 			            		<button class="btn btn-sm btn-primary btn-fla" 
-			            			v-if="role.USUARIO == auth.user.profile.roles_id && presupuesto.estado == 'reservado' && isAfterNow(presupuesto.fecha)"
+			            			v-if="auth.checkRole(role.USUARIO) && presupuesto.estado == 'reservado' && isAfterNow(presupuesto.fecha)"
 			            			@click.prevent="changeEstadoPresupuesto('confirmado')" :disabled="!presupuesto.publicacion.estado">
 			            			Confirmar Reserva
 			            		</button>
 								<!-- boton de cancelar reserva o presupuesto de usuario-->
 			            		<button class="btn btn-sm btn-danger btn-fla" 
-			            			v-if="role.USUARIO == auth.user.profile.roles_id  && presupuesto.estado == 'reservado'"
+			            			v-if="auth.checkRole(role.USUARIO) && presupuesto.estado == 'reservado'"
 			            			@click.prevent="changeEstadoPresupuesto('cancelado')" :disabled="!presupuesto.publicacion.estado">
 			            			Cancelar
 			            		</button>
@@ -159,8 +159,8 @@
 				<div class="col-md-3" v-if="presupuesto != null">
 					<div class="box box-success collapsed-box">
 						<div class="box-header with-border">
-							<h3 v-if="role.USUARIO == auth.user.profile.roles_id" class="box-title">Proveedor</h3>
-							<h3 v-if="role.PROVEEDOR == auth.user.profile.roles_id" class="box-title">Adquiriente</h3>
+							<h3 v-if="auth.checkRole(role.USUARIO)" class="box-title">Proveedor</h3>
+							<h3 v-if="auth.checkRole(role.PROVEEDOR)" class="box-title">Adquiriente</h3>
 							<div class="box-tools pull-right">
 								<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
 								</button>
@@ -169,7 +169,7 @@
 						</div>
 						<!-- /.box-header -->
 						<div class="box-body" style="display: none;">
-							<template v-if="role.USUARIO == auth.user.profile.roles_id">
+							<template v-if="auth.checkRole(role.USUARIO)">
 								<img class="profile-user-img img-responsive" 
 								:src="'/storage/avatars/' + presupuesto.publicacion.proveedor.user.usuario.avatar" alt="avatar">
 								<div class="col-sm-12" style="margin-top: 65px">
@@ -185,7 +185,7 @@
 									</div>
 								</div>
 							</template>
-							<template v-if="role.PROVEEDOR == auth.user.profile.roles_id">
+							<template v-if="auth.checkRole(role.PROVEEDOR)">
 								<img class="profile-user-img img-responsive" 
 								:src="'/storage/avatars/' + presupuesto.user.usuario.avatar" alt="avatar">
 								<div class="text-center" style="margin-top: 50px">
@@ -193,8 +193,8 @@
 									<div class="col-sm-12">{{ presupuesto.user.usuario.nombre}} {{presupuesto.user.usuario.apellido}}</div>
 									<label class="col-sm-12">Email </label><div class="col-sm-12">{{ presupuesto.user.email}}</div>
 									<label class="col-sm-12">Ubicaci&oacute;n </label>
-									<div class="col-sm-12" v-if="presupuesto.user.usuario.localidad_id != null">
-										{{ presupuesto.user.usuario.localidad.nombre }} - {{presupuesto.user.usuario.localidad.provincia.nombre}}
+									<div class="col-sm-12" v-if="presupuesto.user.usuario.ubicacion_id != null">
+										{{ presupuesto.user.usuario.ubicacion.formatted_address }}
 									</div>
 								</div>
 							</template>
@@ -259,7 +259,7 @@
 					</div>
 				</div>
 
-	            <div class="box box-default" v-if="publicacacionesSugeridas.length > 0 && (!auth.user.authenticated || (auth.user.authenticated && auth.user.profile.roles_id != role.PROVEEDOR))">
+	            <div class="box box-default" v-if="publicacacionesSugeridas.length > 0 && (!auth.user.authenticated || (auth.user.authenticated && !auth.checkRole(role.PROVEEDOR)))">
 	            	<div class="box-header with-border">
 	            		<h3 class="box-title">Publicaciones Sugeridas</h3>
 	            	</div>
@@ -286,7 +286,7 @@
 		</section>
 
 	    <!-- modal presupuesto para proveedor-->
-	    <div v-if="showPresupuesto && role.PROVEEDOR == auth.user.profile.roles_id" id="presupuesto" class="modal" role="dialog" :style="{ display : showPresupuesto  ? 'block' : 'none' }">
+	    <div v-if="showPresupuesto && auth.checkRole(role.PROVEEDOR)" id="presupuesto" class="modal" role="dialog" :style="{ display : showPresupuesto  ? 'block' : 'none' }">
 	        <div class="modal-dialog modal-lg">
 	            <div class="modal-content">
 	                <div class="modal-header">
@@ -303,7 +303,7 @@
 	    </div>
 
 	    <!-- modal modificar presupuesto para usuario-->
-	    <div v-if="showModificarPresupuesto && role.USUARIO == auth.user.profile.roles_id" id="modificar" class="modal" role="dialog" :style="{ display : showModificarPresupuesto  ? 'block' : 'none' }">
+	    <div v-if="showModificarPresupuesto && auth.checkRole(role.USUARIO)" id="modificar" class="modal" role="dialog" :style="{ display : showModificarPresupuesto  ? 'block' : 'none' }">
 	        <div class="modal-dialog modal-lg">
 	            <div class="modal-content">
 	                <div class="modal-header">
@@ -478,7 +478,7 @@
 		},
 		computed: {
 			getNameFromUser(){
-				if(auth.user.profile.roles_id == this.role.USUARIO)
+				if(auth.checkRole(role.USUARIO))
 				{
 					return this.presupuesto.publicacion.proveedor.nombre;
 				} else {

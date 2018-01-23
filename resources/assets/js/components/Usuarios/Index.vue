@@ -27,8 +27,8 @@
                                     <template slot="actions" slot-scope="props" v-if="auth.user.authenticated">
                                         <div class="custom-actions">
 
-                                            <select v-if="auth.user.profile.roles_id == 1"
-                                                v-model="props.rowData.roles_id" 
+                                            <select v-if="auth.checkRole(role.ADMINISTRADOR)"
+                                                v-model="props.rowData.roles" 
                                                 @change="changeItemRol($event, props.rowData, props.rowIndex)">
                                                 <option 
                                                     v-for="option in options" 
@@ -96,6 +96,7 @@
     import FieldDefs from './FieldDefs.js';
     import route from '../../routes.js';
     import auth from '../../auth.js';
+    import role from '../../config.js';
 
     Vue.component('detail-row-usuario', DetailRow);
     Vue.component('filter-bar', FilterBar);

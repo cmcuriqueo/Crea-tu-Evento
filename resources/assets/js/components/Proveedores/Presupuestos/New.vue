@@ -49,7 +49,7 @@
 	                calle: null,
 	                numero: null,
 	                piso: null,
-	                localidad_id: null
+	                ubicacion_id: null
 				},
 				errorsApi: []
 			}
@@ -60,8 +60,8 @@
 	            this.$events.fire('validarFormPresupuesto')
 	        },
 	        sendForm: function(){
-	        	if(this.domicilio.localidad_id != null){
-	        		var localidad_id = this.domicilio.localidad_id.value;
+	        	if(this.domicilio.ubicacion_id != null){
+	        		var localidad_id = this.domicilio.ubicacion.place_id;
 	        	}
 	        	var data = {
                 	rubros: this.presupuesto.rubros,
@@ -73,7 +73,7 @@
                     calle: this.domicilio.calle,
                     numero: this.domicilio.numero,
                     piso: this.domicilio.piso,
-                    localidad_id: localidad_id,
+                    localidad_id: ubicacion_id,
                 }
                 this.$refs.button.disabled = true;
                 this.$refs.buttonAtras.disabled = true;

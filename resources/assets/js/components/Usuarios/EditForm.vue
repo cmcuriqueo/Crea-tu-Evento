@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="col-sm-4">
-            <button type="button" class="btn-block" @click="showModificar = true">Modificar Informaci&oacute;n de perfil</button>
+            <button type="button" class="btn btn-block btn-primary" @click="showModificar = true">Modificar Informaci&oacute;n de perfil</button>
         </div>
 
         <!-- Modal Modificar-->
@@ -197,7 +197,7 @@ export default {
         closeModal: function(){
             this.errorsApi = [];
             this.getUserPerfil();
-            if (auth.user.profile.usuario.localidad_id != null){
+            if (auth.user.profile.usuario.ubicacion_id != null){
                 this.setDefaultLocalidad();
             }
             this.validar = false;
@@ -226,10 +226,10 @@ export default {
                 })
         },
         setDefaultLocalidad: function(){
-            if(auth.user.profile.usuario.localidad_id != null)
+            if(auth.user.profile.usuario.ubicacion_id != null)
                 this.localidadSelect = {
-                   'value':auth.user.profile.usuario.localidad_id,
-                   'label':auth.user.profile.usuario.localidad.nombre+' ('+auth.user.profile.usuario.localidad.provincia.nombre+')'
+                   'value':auth.user.profile.usuario.ubicacion.place_id,
+                   'label':auth.user.profile.usuario.ubicacion.formatted_address
                 }
         },
         getUserPerfil: function(){

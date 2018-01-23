@@ -81,7 +81,7 @@
 	                            :options="localidades"
 	                            data-vv-name="localidad"
 	                            v-validate="'required'"
-	                            v-model="domicilio.localidad_id" 
+	                            v-model="domicilio.ubicacion_id" 
 	                            placeholder="Seleccione una localidad">
 	                        </v-select>
 	                       
@@ -239,7 +239,7 @@
 	                calle: null,
 	                numero: null,
 	                piso: null,
-	                localidad_id: null
+	                ubicacion_id: null
 				},
 				required: true
 			},
@@ -424,12 +424,12 @@
 	    				this.getHorarios();
 	    			}
 
-	    			if(this.domicilio.localidad_id != null)
+	    			if(this.domicilio.ubicacion_id != null)
 	    			{
 		    			//seteo datos del lugar del evento
 		    			this.domicilio.localidad_id = {
-		 						'value':this.domicilio.localidad_id,
-	               				'label':this.domicilio.localidad.nombre+' ('+this.domicilio.localidad.provincia.nombre+')'
+		 						'value':this.domicilio.ubicacion.place_id,
+	               				'label':this.domicilio.ubicacion.formatted_address
 		    				}
 		    		}
 

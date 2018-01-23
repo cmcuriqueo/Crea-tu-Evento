@@ -8,7 +8,7 @@
 							<h3 class="box-title">Mensajes</h3>
 
 							<div class="box-tools pull-right"
-								 v-if="role.PROVEEDOR == auth.user.profile.roles_id">
+								 v-if="auth.checkRole(role.PROVEEDOR)">
 								<div class="has-feedback">
 									<input type="checkbox" v-model="unanswered" name="unanswered" @change="onFilterSet"> Solicitudes no respondidas
 								</div>
@@ -59,7 +59,7 @@
 												</small>
 											</td>
 											<td v-else></td>
-											<template v-if="role.USUARIO == auth.user.profile.roles_id">
+											<template v-if="auth.checkRole(role.USUARIO)">
 												<td v-if="isAfterNow(mensaje.reserva.fecha) && mensaje.reserva.estado == 'reservado'">
 												<td v-if="isAfterNow(mensaje.reserva.fecha) && 
 													mensaje.reserva.presupuestado == true && mensaje.reserva.estado == 'presupuesto'">
@@ -82,7 +82,7 @@
 						                            </el-tooltip>
 						                        </td>
 						                    </template>
-						                    <template v-if="role.PROVEEDOR == auth.user.profile.roles_id">
+						                    <template v-if="auth.checkRole(role.PROVEEDOR)">
 						                    	<td v-if="isAfterNow(mensaje.reserva.fecha) && mensaje.reserva.estado == 'reservado'">
 												</td>
 						                    	<td v-if="!isAfterNow(mensaje.reserva.fecha) && mensaje.reserva.estado != 'confirmado'">
@@ -242,7 +242,7 @@
                 return moment(value, 'YYYY-MM-DD').isAfter(moment({}));
             },
 			getNameFromUser(mensaje){
-				if(auth.user.profile.roles_id == this.role.PROVEEDOR)
+				if(auth.checkRole(role.PROVEEDOR))
 					if(mensaje.to_user_id != auth.user.profile.id)
 					{
 						return mensaje.to_user.usuario.nombre + ' ' +mensaje.to_user.usuario.apellido

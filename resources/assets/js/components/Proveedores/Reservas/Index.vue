@@ -13,7 +13,7 @@
 					</h3>
 			        <p v-if="event.hora_inicio != null">Desde {{ formatTime(event.hora_inicio) }}hs hasta {{ formatTime(event.hora_finalizacion) }} hs</p>
 			        <p>Total: {{ formatMoney(event.precio_total) }}</p>
-			        <p v-if="auth.user.profile.roles_id == role.PROVEEDOR"> 
+			        <p v-if="auth.checkRole(role.PROVEEDOR)"> 
 			        	Reservado por: {{event.user.usuario.nombre}} {{event.user.usuario.apellido}}
 			        </p>
 			        <p v-else>
@@ -68,7 +68,7 @@
 											</h3>
 									        <p v-if="event.hora_inicio != null">Desde {{ formatTime(event.hora_inicio) }}hs hasta {{ formatTime(event.hora_finalizacion) }} hs</p>
 									        <p>Total: {{ formatMoney(event.precio_total) }}</p>
-									        <p v-if="auth.user.profile.roles_id == role.PROVEEDOR"> 
+									        <p v-if="auth.checkRole(role.PROVEEDOR)"> 
 									        	Reservado por: {{event.user.usuario.nombre}} {{event.user.usuario.apellido}}
 									        </p>
 									        <p v-else>
@@ -161,7 +161,7 @@
 				this.dataEvents = [];
 				if(this.publicacionId != null)
 					url = 'api/publicacion/'+this.publicacionId+'/reserva';
-				else if( auth.user.profile.roles_id == role.USUARIO)
+				else if( auth.checkRole(role.USUARIO))
 					url = 'api/user/'+this.auth.user.profile.id+'/reserva';
 				else
 					url = 'api/proveedor/me/reserva';

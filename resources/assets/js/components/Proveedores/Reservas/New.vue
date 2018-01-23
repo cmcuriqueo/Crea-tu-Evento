@@ -50,7 +50,7 @@
 	                calle: null,
 	                numero: null,
 	                piso: null,
-	                localidad_id: null
+	                ubicacion_id: null
 				}
 			}
 		},
@@ -60,8 +60,8 @@
 	            this.$events.fire('validarFormReserva')
 	        },
 	        sendForm: function(){
-	        	if(this.domicilio.localidad_id != null){
-	        		var localidad_id = this.domicilio.localidad_id.value;
+	        	if(this.domicilio.ubicacion_id != null){
+	        		var localidad_id = this.domicilio.ubicacion.place_id;
 	        	}
 	        	var data = {
                 	rubros: this.reserva.rubros,
@@ -73,7 +73,7 @@
                     calle: this.domicilio.calle,
                     numero: this.domicilio.numero,
                     piso: this.domicilio.piso,
-                    localidad_id: this.domicilio.localidad_id,
+                    localidad_id: this.domicilio.ubicacion_id,
                     aplicar_decuento: reserva.aplicar_decuento
                 }
 

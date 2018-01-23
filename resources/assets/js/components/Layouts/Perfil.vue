@@ -2,13 +2,13 @@
     <div class="default-content">
         <section class="content">
             <div class="row">
-                <div class="col-md-3">
+                <div v-if="perfil !== null" class="col-md-3">
                     <!-- Profile Image -->
                     <div class="box box-primary">
                         <div class="box-body box-profile">
                             <img class="profile-user-img img-responsive img-circle" :src="srcUrl" alt="avatar">
 
-                            <h3 v-if="perfil !== null" class="profile-username">
+                            <h3 class="profile-username">
                                 {{perfil.nombre}} {{perfil.apellido}}
                             </h3>
 
@@ -27,25 +27,25 @@
 
                     <!-- About Me Box --> 
                     <div class="box box-primary" v-if="perfil !== null && (
-                    perfil.localidad_id != null || (auth.user.profile.roles_id == role.ADMINISTRADOR && perfil.user_id != auth.user.profile.id))">
+                     perfil.ubicacion_id != null || (auth.checkRole(role.ADMINISTRADOR) && perfil.user_id != auth.user.profile.id))">
                         <div class="box-header with-border">
                             <h3 class="box-title">Informaci&oacute;n</h3>
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
 
-                            <strong v-if="perfil !== null && (perfil.localidad_id != null)"><i class="fa fa-map-marker margin-r-5"></i> Localidad</strong>
+                            <strong v-if="perfil !== null && (perfil.ubicacion_id != null)"><i class="fa fa-map-marker margin-r-5"></i> Localidad</strong>
 
-                            <p v-if="perfil !== null && (perfil.localidad_id != null)" class="text-muted">{{ perfil.localidad.nombre}}, {{perfil.localidad.provincia.nombre}}</p>
+                            <p v-if="perfil !== null && (perfil.ubicacion_id != null)" class="text-muted">{{ perfil.ubicacion.formatted_address }}</p>
 
                             <div 
-                                v-if="perfil !== null && ((perfil.user.roles_id != role.ADMINISTRADOR && perfil.user.roles_id != role.PROVEEDOR) &&
-                                perfil.user_id != auth.user.profile.id && auth.user.profile.roles_id == role.ADMINISTRADOR)">
+                                v-if="perfil !== null && ((!checkRole(role.ADMINISTRADOR) && !checkRole(role.PROVEEDOR)) &&
+                                perfil.user_id != auth.user.profile.id && auth.checkRole(role.ADMINISTRADOR))">
                                 <hr>
 
                                 <strong><i class="fa fa-users margin-r-5"></i> Rol </strong>
                                 <select 
-                                    v-model="perfil.user.roles_id" 
+                                    v-model="newRolesId" 
                                     @change="changeItemRol()">
                                     <option 
                                         v-for="option in options" 
@@ -64,57 +64,43 @@
 
                 <template v-if="perfil !== null && perfil.user_id == auth.user.profile.id">
                     <div class="col-md-9">
-                        <div class="box">
-                            <div class="box-header">
-                                <h3 class="box-title">Cuenta</h3>
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                                </div>
-                            </div>
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs">
+                                <!--<li class="active"><a href="#activity" data-toggle="tab">Activity</a></li>-->
+                                <li class="active" v-if="perfil !== null && perfil.user_id == auth.user.profile.id">
+                                    <a href="#info" data-toggle="tab">Informaci&oacute;n</a>
+                                </li>
+                                <li v-if="perfil !== null && perfil.user_id == auth.user.profile.id">
+                                    <a href="#account" data-toggle="tab">Cuenta</a>
+                                </li>
+                            </ul>
+                        
 
-                            <div class="box-body" style="display: block;">
-                                <div class="nav-tabs-custom">
-                                    <ul class="nav nav-tabs">
-                                        <!--<li class="active"><a href="#activity" data-toggle="tab">Activity</a></li>-->
-                                        <li class="active" v-if="perfil !== null && perfil.user_id == auth.user.profile.id">
-                                            <a href="#info" data-toggle="tab">Informaci&oacute;n</a>
-                                        </li>
-                                        <li v-if="perfil !== null && perfil.user_id == auth.user.profile.id">
-                                            <a href="#account" data-toggle="tab">Configuración</a>
-                                        </li>
-                                    </ul>
-                                
+                            <div class="tab-content">
 
-                                    <div class="tab-content">
-                                        
-                                        <!--<div class="active tab-pane" id="activity">
-                                            <activity></activity>
-                                        </div>-->
-
-                                        <div v-if="perfil !== null && perfil.user_id == auth.user.profile.id" 
-                                            class="active tab-pane" id="info">
-                                            <show :usuario="perfil"></show>
-                                        </div>
-
-                                        <div v-if="perfil !== null && perfil.user_id == auth.user.profile.id"  class="tab-pane content" id="account">
-                                            <div>
-                                                <form-perfil></form-perfil>
-                                            </div>
-                                            <div>
-                                                <account></account>
-                                            </div>
-                                            <br><br>
-                                                <form-perfil-proveedor v-if="perfil !== null && auth.user.authenticated && (perfil.user_id == auth.user.profile.id && auth.user.profile.roles_id == role.PROVEEDOR)"
-                                                :idProveedor="perfil.user.proveedor.id">
-                                                </form-perfil-proveedor>
-                                        </div>
-                                        <!-- /.tab-pane -->
+                                <div v-if="perfil !== null && perfil.user_id == auth.user.profile.id" 
+                                    class="active tab-pane" id="info">
+                                    <div class="row">
+                                        <show :usuario="perfil"></show>
                                     </div>
                                 </div>
-                            <!-- /.tab-content -->
+
+                                <div v-if="perfil !== null && perfil.user_id == auth.user.profile.id"  class="tab-pane content" id="account">
+                                    <div class="row">
+                                        <form-perfil></form-perfil>
+                                    </div>
+                                    <div class="row">
+                                        <account></account>
+                                    </div>
+                                    <br><br>
+                                    <form-perfil-proveedor v-if="perfil !== null && auth.user.authenticated && (perfil.user_id == auth.user.profile.id && auth.checkRole(role.PROVEEDOR))"
+                                    :idProveedor="perfil.user.proveedor.id">
+                                    </form-perfil-proveedor>
+                                </div>
+                                <!-- /.tab-pane -->
                             </div>
                         </div>
-                        <!-- /.nav-tabs-custom -->
+                        <!-- /.tab-content -->
                     </div>
                 </template>
 
@@ -143,14 +129,14 @@
                     </div>
                 </template>
 
-                <div class="col-md-12" v-if="(perfil !== null) && (perfil.user.roles_id == role.USUARIO) &&
+                <div class="col-md-12" v-if="perfil !== null && checkRole(role.USUARIO) &&
                         (perfil.user.id == auth.user.profile.id)">
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#eventos" data-toggle="tab" aria-expanded="false">Eventos</a></li>
                             <li class=""><a href="#calificaciones" data-toggle="tab" aria-expanded="false">Calificaciones</a></li>
                             <li v-if="perfil !== null && (perfil.user_id == auth.user.profile.id 
-                                        || auth.user.profile.roles_id === role.ADMINISTRADOR)"
+                                        || auth.checkRole(role.ADMINISTRADOR))"
                                 class=""><a href="#actividades" data-toggle="tab" aria-expanded="false">Actividades</a></li>
                         </ul>
                         <div class="tab-content">
@@ -171,14 +157,14 @@
                     </div>
                 </div>
                 <box-proveedor 
-                    v-if="perfil !== null && auth.user.authenticated && ((perfil.user.roles_id == role.PROVEEDOR && perfil.user.id == auth.user.profile.id) || (auth.user.profile.roles_id == role.ADMINISTRADOR && perfil.user.roles_id == role.PROVEEDOR) || (auth.user.profile.roles_id == role.SUPERVISOR && perfil.user.roles_id == role.PROVEEDOR))" 
+                    v-if="perfil !== null && auth.user.authenticated && ((checkRole(role.PROVEEDOR) && perfil.user.id == auth.user.profile.id) || (auth.checkRole(role.ADMINISTRADOR) && checkRole(role.PROVEEDOR)) || (auth.checkRole(role.SUPERVISOR) && checkRole(role.PROVEEDOR)))" 
                     :perfil="perfil">    
                 </box-proveedor>
                 <box-operador 
-                    v-if="perfil != null && auth.user.authenticated && ((perfil.user.roles_id == role.OPERADOR && perfil.user.id == auth.user.profile.id) || (auth.user.profile.roles_id == role.ADMINISTRADOR && perfil.user.roles_id == role.OPERADOR) || (auth.user.profile.roles_id == role.SUPERVISOR && perfil.user.roles_id == role.OPERADOR))">
+                    v-if="perfil != null && auth.user.authenticated && ((checkRole(role.OPERADOR) && perfil.user.id == auth.user.profile.id) || (auth.checkRole(role.ADMINISTRADOR) && checkRole(role.OPERADOR)) || (auth.checkRole(role.SUPERVISOR) && checkRole(role.OPERADOR)))">
                 </box-operador>
                 <box-supervisor
-                    v-if="perfil != null && auth.user.authenticated && ((perfil.user.roles_id == role.SUPERVISOR && perfil.user.id == auth.user.profile.id) || (auth.user.profile.roles_id == role.ADMINISTRADOR && perfil.user.roles_id == role.SUPERVISOR) || (auth.user.profile.roles_id == role.SUPERVISOR && perfil.user.roles_id == role.SUPERVISOR))">
+                    v-if="perfil != null && auth.user.authenticated && ((checkRole(role.SUPERVISOR) && perfil.user.id == auth.user.profile.id) || (auth.checkRole(role.ADMINISTRADOR) && checkRole(role.SUPERVISOR)) || (auth.checkRole(role.SUPERVISOR) && checkRole(role.SUPERVISOR)))">
                 </box-supervisor>
             </div>
         </section>
@@ -213,6 +199,7 @@ export default {
             avatar: null,
             srcUrl: '',
             role: Role,
+            newRolesId: {},
             options: [
                       { text: 'Supervisor', value: '2' },
                       { text: 'Operador', value: '3' },
@@ -264,7 +251,7 @@ export default {
             this.$http.post('api/user/'+ this.$route.params.userId +'/rol',
             {
                 _method: 'PATCH',
-                roles_id: this.perfil.user.roles_id
+                roles_id: this.newRolesId
             })
             .then(response => {
                 this.$toast.success({
@@ -278,11 +265,17 @@ export default {
                 });
             })
            
+        },
+        checkRole(role){
+            for (let rol of this.perfil.user.roles){
+                if(rol.id === role) return true;
+            }
+            return false;
         }
     },
     watch: {
         '$route.params.userId' (){
-            if(auth.user.authenticated && (this.$route.params.userId == auth.user.profile.id || auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR ))
+            if(auth.user.authenticated && (this.$route.params.userId == auth.user.profile.id || auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR )))
             this.getUserPerfil();
         }
     },

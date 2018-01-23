@@ -3,8 +3,8 @@
     <div>
         <br>
         <hr>
-        <div  class="col-sm-4">
-            <button type="button" class="btn-block" @click="showContrasenia = true">Cambiar contraseña</button>
+        <div  class="col-sm-12">
+            <button type="button" class="btn btn-block btn-primary" @click="showContrasenia = true">Cambiar contraseña</button>
         </div>
                                 
         <!-- Modal cambiar contraseña-->
@@ -89,9 +89,17 @@
         </div>
         <br>
         <hr>
-
-        <div class="col-sm-4">
-            <button type="button" class="btn-block" data-toggle="modal" data-target="#desactivar">Desactivar</button>
+        <div class="col-sm-6">
+            <p>Al desactivar tu cuenta, se desactivará tu perfil y se borrará 
+            tu nombre y tu foto de la mayor parte del contenido que compartiste. 
+            Algunas personas podrán seguir viendo determinada información, como 
+            tu nombre en los mensajes que les enviaste.
+            Podras volver a activarla cuando desees introduciendo tu correo y contraseña 
+            desde la pagina de inicio de sesión.
+            </p>
+        </div>  
+        <div class="col-sm-6">
+            <button type="button" class="btn btn-block btn-danger" data-toggle="modal" data-target="#desactivar">Desactivar</button>
         </div>
 
         <!-- Modal Disable-->

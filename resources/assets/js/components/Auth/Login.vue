@@ -124,8 +124,8 @@ export default {
             ).then(response => {
                 localStorage.setItem('id_token', response.data.meta.token)
                 Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('id_token')
-                user.authenticated = true
-                user.profile = response.data.data
+                auth.user.authenticated = true
+                auth.user.profile = response.data.data
 
                 router.push({
                     name: 'home'

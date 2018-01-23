@@ -18,7 +18,7 @@ class LogController extends Controller
 
     	if (Gate::allows('show-log', $actividad)) {
 	    	if($actividad->tabla === 'users') {
-	    		$user = User::where('id', $actividad->registro_id)->with('usuario', 'role')->first();
+	    		$user = User::where('id', $actividad->registro_id)->with('usuario', 'roles')->first();
 	    		return response()->json([ 'data' => $actividad, 'user' => $user], 200);
 	    	}
 	    	else

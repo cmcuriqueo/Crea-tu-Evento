@@ -80,7 +80,7 @@ class RegisterUserController extends Controller
         $meta['token'] = $token;
         $ubicacion = $this->createUbicacion($request);
         $this->createUsuario($request, $user->id, $ubicacion);
-        $user = User::where('id', $user->id)->with('usuario.ubicacion', 'role')->first();
+        $user = User::where('id', $user->id)->with('usuario.ubicacion', 'roles')->first();
         return response()->json(['data' =>  $user, 'meta' => $meta, 'csrfToken' => csrf_token()], 200);
     }
 

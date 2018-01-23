@@ -14,22 +14,22 @@
             </span>
         </a>
         <ul class="dropdown-menu">
-            <li v-if="(auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR) && notificaciones.length == 0" class="header">
+            <li v-if="(auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR)) && notificaciones.length == 0" class="header">
                 Sin Notificaciones
             </li>
-            <li v-if="auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR && notificaciones.length >= 0" class="header">
+            <li v-if="(auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR)) && notificaciones.length >= 0" class="header">
                 {{ notificaciones.length }} Notificaciones
             </li>
-            <li v-if="auth.user.profile.roles_id == role.PROVEEDOR" class="header">
+            <li v-if="auth.checkRole(role.PROVEEDOR)" class="header">
                 {{mensajesPresupuesto == 0 ? 'Sin Notificaciones' : '1 Notificaci&oacute;n' }}
             </li>
-            <li v-if="auth.user.profile.roles_id == role.USUARIO" class="header">
+            <li v-if="auth.checkRole(role.USUARIO)" class="header">
                 {{pendientes == 0 ? 'Sin Notificaciones' : '1 Notificaci&oacute;n' }}
             </li>
             <li>
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
-                    <template v-if="pendientes > 0  && auth.user.profile.roles_id == role.USUARIO">
+                    <template v-if="pendientes > 0  && auth.checkRole(role.USUARIO)">
                         <li>                     
                             <router-link 
                                 tag="a" 
@@ -39,7 +39,7 @@
                             </router-link>
                         </li>
                     </template>
-                    <template v-if="mensajesPresupuesto > 0  && auth.user.profile.roles_id == role.PROVEEDOR">
+                    <template v-if="mensajesPresupuesto > 0  && auth.checkRole(role.PROVEEDOR)">
                         <li>                     
                             <router-link 
                                 tag="a" 
@@ -49,7 +49,7 @@
                             </router-link>
                         </li>
                     </template>
-                    <template v-if="notificaciones.length > 0  && (auth.user.profile.roles_id == role.SUPERVISOR || auth.user.profile.roles_id == role.ADMINISTRADOR)">
+                    <template v-if="notificaciones.length > 0  && (auth.checkRole(role.SUPERVISOR) || auth.checkRole(role.ADMINISTRADOR))">
                         <li v-for="notificacion in notificaciones">
 
                             <template v-if="notificacion.log_id != null && (notificacion.log.accion == 'create' &&  notificacion.log.tabla == 'proveedores')">                     
@@ -103,17 +103,17 @@
             }
         },
         beforeMount(){
-            if(auth.user.profile.roles_id == role.USUARIO)
+            /*if(auth.checkRole(role.USUARIO))
                 this.calificacionesPendientes();
-            if(auth.user.profile.roles_id == role.PROVEEDOR)
+            if(auth.checkRole(role.PROVEEDOR))
                 this.getMensajes();
-            if(auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR)
-                this.getNotificaciones();
+            if(auth.checkRole(role.ADMINISTRADOR || auth.checkRole(role.SUPERVISOR))
+                this.getNotificaciones();*/
         },
         methods: {
             getNotificaciones(){
                 this.notificaciones = [];
-                if(auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR)
+                if(auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR))
                 this.$http.get('api/usuario/me/notificaciones').then(response => {
                     for(var notificacion of response.data){
                         this.notificaciones.push(
@@ -171,14 +171,14 @@
             }
         },
         watch: {
-            '$route.path' () {
-                if(auth.user.profile.roles_id == role.USUARIO)
+            /*'$route.path' () {
+                if(auth.checkRole(role.USUARIO))
                     this.calificacionesPendientes();
-                if(auth.user.profile.roles_id == role.PROVEEDOR)
+                if(auth.checkRole(role.PROVEEDOR))
                     this.getMensajes();
-                if(auth.user.profile.roles_id == role.ADMINISTRADOR || auth.user.profile.roles_id == role.SUPERVISOR)
+                if(auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR))
                     this.getNotificaciones();
-            }
+            }*/
         }
     }
 </script>
