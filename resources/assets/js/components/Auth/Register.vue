@@ -107,7 +107,7 @@
                  </div>
 
                  <div :class="{'form-group has-feedback': true, 'form-group has-error': errors.has('localidad')&&validar}">
-                      <el-select style="width: 100%"
+                    <el-select style="width: 100%"
                         v-model="usuario.localidad_id"
                         filterable
                         remote
@@ -117,14 +117,14 @@
                         v-validate="'required'" 
                         data-vv-name="localidad"
                         :loading="loading">
-                        <el-option
-                          v-for="item in localidades"
-                          :key="item.place_id"
-                          :label="item.formatted_address"
-                          :value="item.place_id">
-                        </el-option>
-                      </el-select>
-                      <span class="glyphicon glyphicon glyphicon-map-marker form-control-feedback"></span>
+                            <el-option
+                            v-for="item in localidades"
+                            :key="item.place_id"
+                            :label="item.formatted_address"
+                            :value="item.place_id">
+                            </el-option>
+                    </el-select>
+                    <span class="glyphicon glyphicon glyphicon-map-marker form-control-feedback"></span>
                     <!-- vee-validate-->
                     <span v-show="errors.has('localidad')&&validar" class="help-block">{{ errors.first('localidad') }}</span>
                     <!-- validacion api-->

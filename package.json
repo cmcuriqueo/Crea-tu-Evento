@@ -32,6 +32,7 @@
     "vue-event-calendar": "^1.4.12",
     "vue-events": "^3.0.1",
     "vue-google-autocomplete": "^1.0.14",
+    "vue-infinite-loading": "^2.2.3",
     "vue-numeric": "^2.2.6",
     "vue2-editor": "^2.0.26",
     "vuetable-2": "^1.6.3"

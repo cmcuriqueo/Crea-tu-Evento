@@ -50,15 +50,24 @@
                             <div :class="{'form-group has-feedback': true, 'form-group has-error': errors.has('localidad')&&validar}">
                                 <label class="col-sm-2 control-label">Localidad</label>
                                 <div class="col-sm-10">
-                                    <v-select 
-                                        :debounce="250"
+
+                                    <el-select style="width: 100%"
+                                        v-model="localidadSelect"
+                                        filterable
+                                        remote
+                                        reserve-keyword
+                                        placeholder="Localidad"
+                                        :remote-method="getOptions"
                                         v-validate="'required'" 
                                         data-vv-name="localidad"
-                                        v-model="localidadSelect"
-                                        :on-search="getOptions" 
-                                        :options="localidades"
-                                        placeholder="Seleccione una localidad">
-                                    </v-select>
+                                        :loading="loading">
+                                            <el-option
+                                            v-for="item in localidades"
+                                            :key="item.place_id"
+                                            :label="item.formatted_address"
+                                            :value="item.place_id">
+                                            </el-option>
+                                    </el-select>
                                     <!-- validacion vee-validation -->
                                     <span v-show="errors.has('localidad')&&validar" class="help-block">{{ errors.first('localidad') }}</span>
                                     <!-- validacion api-->
@@ -127,121 +136,122 @@
 </template>
 
 <script>
-import auth from '../../auth.js';
-import vSelect from "vue-select";
+    import auth from '../../auth.js';
+    import vSelect from "vue-select";
 
-export default {
-    data() {
-        return {
-            validar: false,
-            showModificar: false,
-            usuario: { nombre: '', apellido: '', sexo: '', fecha_nac: ''},
-            error: false,
-            fecha: null,
-            disabled: { to: '1920-01-01', from: null },
-            localidades: [],
-            localidadSelect: null,
-            errorsApi: []
-        }
-    },
-    beforeMount: function(){
-        //selected data
-        this.getUserPerfil();
-        this.setDefaultLocalidad();
-    },
-    mounted: function(){
-        //rangos maximos de fechas
-        this.fecha = new Date();
-        this.disabled.from = this.fecha.getFullYear()+'-'+this.fecha.getMonth()+'-'+this.fecha.getDate();
-
-    },
-    components: {
-        vSelect
-    },
-    methods: {
-        //envio de formulario de modificación de informacion de usuario
-        sendForm: function() {
-                
-            this.$http.post(
-                'api/usuario/'+this.$route.params.userId,
-                {
-                    _method: 'PATCH',
-                    nombre:  this.usuario.nombre,
-                    apellido:  this.usuario.apellido,
-                    fecha_nac:  this.usuario.fecha_nac,
-                    localidad_id:  this.localidadSelect.value,
-                    sexo:  this.usuario.sexo
-                })
-                .then(response => {
-                    //recarga de informacion de perfil
-                    this.showModificar = false;
-                    this.$toast.success({
-                        title:'¡Cambios realizados!',
-                        message:'Se han realizado correctamente los cambios. :D'
-                    });
-                    this.$events.fire('reloadComponentPerfil');
-                }, response => {
-                    this.validar= false;
-                    this.$toast.error({
-                        title:'¡Error!',
-                        message:'No se han podido guardar los cambios. :('
-                    });
-                    if(response.status === 401|| response.status === 422 )
-                    {
-                        this.errorsApi = response.body;
-                    }
-
-                })
-
-        },
-        closeModal: function(){
-            this.errorsApi = [];
-            this.getUserPerfil();
-            if (auth.user.profile.usuario.ubicacion_id != null){
-                this.setDefaultLocalidad();
+    export default {
+        data() {
+            return {
+                validar: false,
+                showModificar: false,
+                usuario: { nombre: '', apellido: '', sexo: '', fecha_nac: ''},
+                error: false,
+                fecha: null,
+                disabled: { to: '1920-01-01', from: null },
+                localidades: [],
+                localidadSelect: '',
+                errorsApi: []
             }
-            this.validar = false;
-            this.showModificar = false;
         },
-        //form validation
-        validateBeforeSubmit: function() {
-            this.$validator.validateAll().then((result) => {
-                if (result){
-                    this.sendForm();
-                } else {
-                    this.validar = true;
+        beforeMount: function(){
+            //selected data
+            this.getUserPerfil();
+            this.setDefaultLocalidad();
+        },
+        mounted: function(){
+            //rangos maximos de fechas
+            this.fecha = new Date();
+            this.disabled.from = this.fecha.getFullYear()+'-'+this.fecha.getMonth()+'-'+this.fecha.getDate();
+
+        },
+        components: {
+            vSelect
+        },
+        methods: {
+            //envio de formulario de modificación de informacion de usuario
+            sendForm: function() {
+                    
+                this.$http.post(
+                    'api/usuario/'+this.$route.params.userId,
+                    {
+                        _method: 'PATCH',
+                        nombre:  this.usuario.nombre,
+                        apellido:  this.usuario.apellido,
+                        fecha_nac:  this.usuario.fecha_nac,
+                        localidad_id:  this.localidadSelect,
+                        sexo:  this.usuario.sexo
+                    })
+                    .then(response => {
+                        //recarga de informacion de perfil
+                        this.showModificar = false;
+                        this.$toast.success({
+                            title:'¡Cambios realizados!',
+                            message:'Se han realizado correctamente los cambios. :D'
+                        });
+                        this.$events.fire('reloadComponentPerfil');
+                    }, response => {
+                        this.validar= false;
+                        this.$toast.error({
+                            title:'¡Error!',
+                            message:'No se han podido guardar los cambios. :('
+                        });
+                        if(response.status === 401|| response.status === 422 )
+                        {
+                            this.errorsApi = response.body;
+                        }
+
+                    })
+
+            },
+            closeModal: function(){
+                this.errorsApi = [];
+                this.getUserPerfil();
+                if (auth.user.profile.usuario.ubicacion_id != null){
+                    this.setDefaultLocalidad();
                 }
-                return;
-            }).catch(() => {
-                
-            });
-        },
-        //obtiene lista de localidades segun correponda
-        getOptions: function(search, loading) {
-            loading(true)
-            this.$http.get('api/localidades/?q='+ search
-                ).then(response => {
-                    this.localidades = response.data.data
-                    loading(false)
-                })
-        },
-        setDefaultLocalidad: function(){
-            if(auth.user.profile.usuario.ubicacion_id != null)
-                this.localidadSelect = {
-                   'value':auth.user.profile.usuario.ubicacion.place_id,
-                   'label':auth.user.profile.usuario.ubicacion.formatted_address
-                }
-        },
-        getUserPerfil: function(){
-            this.$http.get('api/usuario/'+ this.$route.params.userId )
-                .then(response => {
-                    this.usuario = response.data.data
-                }, response => {
-                    if(response.status === 404){
-                        router.push('/404');
+                this.validar = false;
+                this.showModificar = false;
+            },
+            //form validation
+            validateBeforeSubmit: function() {
+                this.$validator.validateAll().then((result) => {
+                    if (result){
+                        this.sendForm();
+                    } else {
+                        this.validar = true;
                     }
-                })
+                    return;
+                }).catch(() => {
+                    
+                });
+            },
+            //obtiene lista de localidades segun correponda
+            getOptions: function(query) {
+                this. loading = true;
+                this.$http.get('api/localidades/?q='+ query
+                    ).then(response => {
+                        this.localidades = response.data.results;
+                        this.loading = false;
+                    }, response => {this.loading = false;})
+                
+            },
+            setDefaultLocalidad: function(){
+                if(auth.user.profile.usuario.ubicacion_id != null)
+                    this.localidadSelect = [{
+                       'place_id':auth.user.profile.usuario.ubicacion.place_id,
+                       'formatted_address':auth.user.profile.usuario.ubicacion.formatted_address
+                    }]
+            },
+            getUserPerfil: function(){
+                this.$http.get('api/usuario/'+ this.$route.params.userId )
+                    .then(response => {
+                        this.usuario = response.data.data
+                    }, response => {
+                        if(response.status === 404){
+                            router.push('/404');
+                        }
+                    })
+            }
         }
     }
-}
 </script>

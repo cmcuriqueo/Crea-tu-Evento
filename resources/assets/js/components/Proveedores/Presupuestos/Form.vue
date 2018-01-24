@@ -75,16 +75,23 @@
 	                <div :class="{'form-group has-feedback': true, 'form-group has-error': errors.has('localidad')&&validarPresupuesto}">
 	                    <div class="col-sm-12">
 	                        <label class="control-label">Localidad</label><br>
-	                        <v-select
-	                            :debounce="250" 
-	                            :on-search="getOptions" 
-	                            :options="localidades"
-	                            data-vv-name="localidad"
-	                            v-validate="'required'"
-	                            v-model="domicilio.ubicacion_id" 
-	                            placeholder="Seleccione una localidad">
-	                        </v-select>
-	                       
+		                    <el-select style="width: 100%"
+		                        v-model="domicilio.ubicacion_id"
+		                        filterable
+		                        remote
+		                        reserve-keyword
+		                        placeholder="Localidad"
+		                        :remote-method="getOptions"
+		                        v-validate="'required'" 
+		                        data-vv-name="localidad"
+		                        :loading="loading">
+		                            <el-option
+		                            v-for="item in localidades"
+		                            :key="item.place_id"
+		                            :label="item.formatted_address"
+		                            :value="item.place_id">
+		                            </el-option>
+		                    </el-select>
 	                        <!-- validacion vee-validation -->
 	                        <span v-show="errors.has('localidad')&&validarPresupuesto" class="help-block">
 	                        	{{ errors.first('localidad') }}
@@ -344,14 +351,15 @@
 		    		}
 		    	}
 	    	},
-	    	getOptions: function(search, loading) {
-	            loading(true)
-	            this.$http.get('api/localidades/?q='+ search
-	                ).then(response => {
-	                    this.localidades = response.data.data
-	                    loading(false)
-	                })
-        	},
+            getOptions: function(query) {
+                this. loading = true;
+                this.$http.get('api/localidades/?q='+ query
+                    ).then(response => {
+                        this.localidades = response.data.results;
+                        this.loading = false;
+                    }, response => {this.loading = false;})
+                
+            },
 	    	setOrSpliceArticulo(articulo_id){
 	    		var esta = false;
 	    		for (var i = 0; i < this.presupuesto.articulos.length; i++) {

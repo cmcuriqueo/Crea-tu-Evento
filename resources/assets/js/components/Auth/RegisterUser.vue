@@ -112,15 +112,23 @@
                                         </div>
 
                                         <div :class="{'form-group has-feedback': true, 'form-group has-error': errors.has('localidad')&&validar}">
-                                            <v-select
-                                                :debounce="250" 
-                                                :on-search="getOptions" 
-                                                :options="localidades"
-                                                data-vv-name="localidad"
-                                                v-model="usuario.localidad_id" 
+                                            <el-select style="width: 100%"
+                                                v-model="usuario.localidad_id"
+                                                filterable
+                                                remote
+                                                reserve-keyword
+                                                placeholder="Localidad"
+                                                :remote-method="getOptions"
                                                 v-validate="'required'" 
-                                                placeholder="Seleccione una localidad">
-                                            </v-select>
+                                                data-vv-name="localidad"
+                                                :loading="loading">
+                                                    <el-option
+                                                    v-for="item in localidades"
+                                                    :key="item.place_id"
+                                                    :label="item.formatted_address"
+                                                    :value="item.place_id">
+                                                    </el-option>
+                                            </el-select>
                                             <!-- vee-validate-->
                                             <span v-show="errors.has('localidad')&&validar" class="help-block">{{ errors.first('localidad') }}</span>
                                             <!-- validacion api-->
@@ -172,108 +180,107 @@
 </template>
 
 <script>
-import auth from '../../auth.js';
-import router from '../../routes.js';
-import vSelect from "vue-select";
-import { Validator } from 'vee-validate';
+    import auth from '../../auth.js';
+    import router from '../../routes.js';
+    import vSelect from "vue-select";
+    import { Validator } from 'vee-validate';
 
-export default {
-    
-    data() {
-        return {
-            validar: false,
-            name: null,
-            email: null,
-            password: null,
-            password_confirmation: null,
-            error: false,
-            errorsApi: [],
-            localidades: [],
-            usuario: {
-                localidad_id: null,
-                nombre: null,
-                apellido: null,
-                sexo: null,
-                fecha_nac: null
+    export default {
+        
+        data() {
+            return {
+                validar: false,
+                name: null,
+                email: null,
+                password: null,
+                password_confirmation: null,
+                error: false,
+                errorsApi: [],
+                localidades: [],
+                usuario: {
+                    localidad_id: null,
+                    nombre: null,
+                    apellido: null,
+                    sexo: null,
+                    fecha_nac: null
+                },
+                showModalRegister: false
+            }
+        },
+        components: {vSelect},
+        methods: {
+            //clear errorsApi
+            clearErrors: function(){
+                this.error = false,
+                this.errorsApi = [],
+                this.validar = false
             },
-            showModalRegister: false
-        }
-    },
-    components: {vSelect},
-    methods: {
-        //clear errorsApi
-        clearErrors: function(){
-            this.error = false,
-            this.errorsApi = [],
-            this.validar = false
-        },
-        //send form
-        register: function(){
-            this.$http.post(
-                'api/register',
-                {
-                    name: this.usuario.nombre,
-                    email: this.email,
-                    password: this.password,
-                    password_confirmation: this.password_confirmation,
-                    remember: false,
-                    nombre: this.usuario.nombre,
-                    apellido: this.usuario.apellido,
-                    sexo: this.usuario.sexo,
-                    fecha_nac: this.usuario.fecha_nac,
-                    localidad_id: this.usuario.localidad_id.value,
-                    login: false
-                }
-            ).then(response => {
-
-                this.clearForm();
-
-            }, response => {
-                    this.error = true //error de 
-                    this.errorsApi = response.body//lista de errores
-                    this.validar = false
-            })
-        },
-        validateBeforeSubmit: function(e) {
-            this.clearErrors();
-            console.log('entro');
-            this.$validator.validateAll().then((result) => {
-                if (result) {
-                    this.register();
-                } else {
-                    this.validar = true;
-                }
-                return;
-            }).catch(() => {
-                
-            });
-
-        },
-        getOptions: function(search, loading) {
-            loading(true)
-            this.$http.get('api/localidades/?q='+ search
+            //send form
+            register: function(){
+                this.$http.post(
+                    'api/register',
+                    {
+                        name: this.usuario.nombre,
+                        email: this.email,
+                        password: this.password,
+                        password_confirmation: this.password_confirmation,
+                        remember: false,
+                        nombre: this.usuario.nombre,
+                        apellido: this.usuario.apellido,
+                        sexo: this.usuario.sexo,
+                        fecha_nac: this.usuario.fecha_nac,
+                        localidad_id: this.usuario.localidad_id.value,
+                        login: false
+                    }
                 ).then(response => {
-                    this.localidades = response.data.data
-                    loading(false)
+
+                    this.clearForm();
+
+                }, response => {
+                        this.error = true //error de 
+                        this.errorsApi = response.body//lista de errores
+                        this.validar = false
                 })
-        },
-        clearForm: function(){
-            this.name= '';
-            this.email= '';
-            this.password= '';
-            this.password_confirmation= '';
-            this.usuario.localidad_id= null;
-            this.usuario.nombre= '';
-            this.usuario.apellido= '';
-            this.usuario.sexo= '';
-            this.usuario.fecha_nac= '';
-            this.showModalRegister= false;
-            this.clearErrors();
+            },
+            validateBeforeSubmit: function(e) {
+                this.clearErrors();
+                console.log('entro');
+                this.$validator.validateAll().then((result) => {
+                    if (result) {
+                        this.register();
+                    } else {
+                        this.validar = true;
+                    }
+                    return;
+                }).catch(() => {
+                    
+                });
+
+            },
+            getOptions: function(query) {
+                this. loading = true;
+                this.$http.get('api/localidades/?q='+ query
+                    ).then(response => {
+                        this.localidades = response.data.results;
+                        this.loading = false;
+                    }, response => {this.loading = false;})
+                
+            },
+            clearForm: function(){
+                this.name= '';
+                this.email= '';
+                this.password= '';
+                this.password_confirmation= '';
+                this.usuario.localidad_id= null;
+                this.usuario.nombre= '';
+                this.usuario.apellido= '';
+                this.usuario.sexo= '';
+                this.usuario.fecha_nac= '';
+                this.showModalRegister= false;
+                this.clearErrors();
+            }
         }
     }
-};
-
-
 </script>
 
 

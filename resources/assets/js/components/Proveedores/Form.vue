@@ -149,15 +149,24 @@
                     <div :class="{'form-group has-feedback': true, 'form-group has-error': errors.has('localidad')&&validarProveedor}">
                         <div class="col-sm-12">
                             <label class="control-label">Localidad</label><br>
-                            <v-select
-                                :debounce="250" 
-                                :on-search="getOptionsLocalidad" 
-                                :options="localidades"
-                                data-vv-name="localidad"
-                                v-model="proveedor.domicilio.localidad_id" 
+
+                            <el-select style="width: 100%"
+                                v-model="proveedor.domicilio.localidad_id"
+                                filterable
+                                remote
+                                reserve-keyword
+                                placeholder="Localidad"
+                                :remote-method="getOptionsLocalidad"
                                 v-validate="'required'" 
-                                placeholder="Seleccione una localidad">
-                            </v-select>
+                                data-vv-name="localidad"
+                                :loading="loading">
+                                    <el-option
+                                    v-for="item in localidades"
+                                    :key="item.place_id"
+                                    :label="item.formatted_address"
+                                    :value="item.place_id">
+                                    </el-option>
+                            </el-select>
                            
                             <!-- validacion vee-validation -->
                             <span v-show="errors.has('localidad')&&validarProveedor" class="help-block">{{ errors.first('localidad') }}</span>
@@ -268,7 +277,7 @@ export default {
         vSelect
     },
     mounted() {
-        this.$events.$on('validarFormProveedor', () =>this.validateBeforeSubmit());
+        this.$events.$on('validarFormProveedor', () => this.validateBeforeSubmit());
     },
     beforeDestroy() {
         this.$events.$off('validarFormProveedor')
@@ -302,13 +311,13 @@ export default {
                 })
         },
         //obtiene lista de usuarios segun requiera
-        getOptionsLocalidad: function(search, loading) {
-            loading(true)
-            this.$http.get('api/localidades/?q='+ search
+        getOptionsLocalidad: function(query) {
+            this. loading = true;
+            this.$http.get('api/localidades/?q='+ query
                 ).then(response => {
-                    this.localidades = response.data.data
-                    loading(false)
-                })
+                    this.localidades = response.data.results;
+                    this.loading = false;
+                }, response => {this.loading = false;})
         },
 
         onFileChange(e) {

@@ -38,8 +38,6 @@ var EditRubro = require('./components/Proveedores/Prestaciones/EditRubro');
 var IndexCategoria = require('./components/Proveedores/Categorias/Index');
 var IndexCaracteristica = require('./components/Proveedores/Caracteristicas/Index');
 
-var IndexLocalidad = require('./components/Localidades/Index');
-
 var IndexReserva = require('./components/Proveedores/Reservas/Index');
 var IndexCalificaciones = require('./components/Proveedores/Calificaciones/Index');
 
@@ -161,12 +159,6 @@ let routes = [
 			meta: { requiresAuth: true }
 
 		},	
-		{
-			path: '/localidades',
-			component: IndexLocalidad,
-			beforeEnter: guardRoute,
-			meta: { Role: [role.ADMINISTRADOR, role.SUPERVISOR], requiresAuth: true }	
-		},
 		//publicaciones
 		{
 			path: '/publicacion/new',
@@ -344,7 +336,7 @@ function checkAuth(){
 }
 
 export default new VueRouter({
-	mode: 'history',
+	mode: 'hash',
 	routes,
 	linkActiveClass: 'is-active'
 });

@@ -3,82 +3,30 @@
     <li class="dropdown notifications-menu">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-bell-o"></i>
-            <span v-if="pendientes > 0" class="label label-warning">
+            <span class="label label-warning">
                 1
             </span>
-            <span v-if="mensajesPresupuesto > 0" class="label label-warning">
-                1
-            </span>
-            <span v-if="notificaciones.length > 0" class="label label-warning">
-                {{notificaciones.length}}
-            </span>
+
         </a>
         <ul class="dropdown-menu">
-            <li v-if="(auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR)) && notificaciones.length == 0" class="header">
+            <li class="header">
                 Sin Notificaciones
             </li>
-            <li v-if="(auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR)) && notificaciones.length >= 0" class="header">
-                {{ notificaciones.length }} Notificaciones
-            </li>
-            <li v-if="auth.checkRole(role.PROVEEDOR)" class="header">
-                {{mensajesPresupuesto == 0 ? 'Sin Notificaciones' : '1 Notificaci&oacute;n' }}
-            </li>
-            <li v-if="auth.checkRole(role.USUARIO)" class="header">
-                {{pendientes == 0 ? 'Sin Notificaciones' : '1 Notificaci&oacute;n' }}
-            </li>
+
             <li>
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
-                    <template v-if="pendientes > 0  && auth.checkRole(role.USUARIO)">
-                        <li>                     
-                            <router-link 
-                                tag="a" 
-                                to="/calificaciones">                
-                                <i class="fa fa-smile-o text-aqua"></i> 
-                                {{pendientes}} {{pendientes == 1 ? 'calificacion pendiente' : 'calificaciones pendientes'}}.
-                            </router-link>
-                        </li>
-                    </template>
-                    <template v-if="mensajesPresupuesto > 0  && auth.checkRole(role.PROVEEDOR)">
-                        <li>                     
-                            <router-link 
-                                tag="a" 
-                                to="/mensajes">
-                                <i class="fa fa-envelope-o text-aqua"></i>               
-                                    {{mensajesPresupuesto}} {{mensajesPresupuesto == 1 ? 'presupuesto pendiente' : 'presupuestos pendientes'}}.
-                            </router-link>
-                        </li>
-                    </template>
-                    <template v-if="notificaciones.length > 0  && (auth.checkRole(role.SUPERVISOR) || auth.checkRole(role.ADMINISTRADOR))">
+
+                    <template>
                         <li v-for="notificacion in notificaciones">
-
-                            <template v-if="notificacion.log_id != null && (notificacion.log.accion == 'create' &&  notificacion.log.tabla == 'proveedores')">                     
-                                <a href="#" @click.prevent="notificacionVista(notificacion)">
-                                    <i class="fa fa-user-plus text-aqua"></i>               
-                                        {{notificacion.descripcion}}
-                                </a>
-                            </template>
-
-                            <template v-if="notificacion.log_id != null && ((notificacion.log.accion == 'baja' || notificacion.log.accion == 'rechazado') &&  notificacion.log.tabla == 'proveedores')">                     
-                                <a href="#" @click.prevent="notificacionVista(notificacion)">
-                                    <i class="fa fa-user-times text-aqua"></i>               
-                                        {{notificacion.descripcion}}
-                                </a>
-                            </template>
-
-                            <template v-if="notificacion.log_id != null && (notificacion.log.accion == 'aprobado' &&  notificacion.log.tabla == 'proveedores')">                     
-                                <a href="#" @click.prevent="notificacionVista(notificacion)">
-                                    <i class="fa fa-check text-aqua"></i>               
-                                        {{notificacion.descripcion}}
-                                </a>
-                            </template>
-                            <template v-if="notificacion.log_id != null && (notificacion.log.accion == 'reportado' &&  notificacion.log.tabla == 'calificaciones')">                     
-                                <a href="#" @click.prevent="notificacionVista(notificacion)">
-                                    <i class="fa fa-flag text-aqua"></i>               
-                                        {{notificacion.descripcion}}
-                                </a>
-                            </template>
+                            Line:
+                            <span v-text="notificacion"></span>
                         </li>
+                        <infinite-loading @infinite="infiniteHandler">
+                            <span slot="no-more">
+                                No hay mas notificaciones!.
+                            </span>
+                        </infinite-loading>
                     </template>
                 </ul>
             </li>
@@ -90,6 +38,7 @@
     import route from '../../routes.js';
     import role from '../../config.js';
     import moment from 'moment';
+    import InfiniteLoading from 'vue-infinite-loading';
 
     export default {
         data() {
@@ -102,13 +51,9 @@
                 route: route
             }
         },
+        components: {InfiniteLoading},
         beforeMount(){
-            /*if(auth.checkRole(role.USUARIO))
-                this.calificacionesPendientes();
-            if(auth.checkRole(role.PROVEEDOR))
-                this.getMensajes();
-            if(auth.checkRole(role.ADMINISTRADOR || auth.checkRole(role.SUPERVISOR))
-                this.getNotificaciones();*/
+            this.notificaciones = [0,1,2,3,4,5,6,7,8,9,10];
         },
         methods: {
             getNotificaciones(){
@@ -121,64 +66,23 @@
                     }
                 });
             },
-            notificacionVista(notificacion){
-                this.$http.get('api/notificacion/'+notificacion.id).then(response => {
-                    for (var i = 0; i < this.notificaciones.length; i++) {
-                        if(this.notificaciones[i].id == notificacion.id){
-                            this.notificaciones.splice(i, 1);
-                            break;
-                        }
-                    }
-                }, response => {
-                    console.log('error')
-                });
-                if(notificacion.log.tabla == 'calificaciones'){
-                    this.$http.get('api/calificacion/'+notificacion.log.registro_id).then(response => {
-                        this.route.push('/publicacion/'+response.data.publicacion_id);
-                    }, response => {
-                        this.$toast.error({
-                            title:'¡Error!',
-                            message:'No se han podido acceder a esta información.'
-                        });
-                    }); 
-                } else {
-                    this.route.push('/proveedores');
-                }
-            },
-            calificacionesPendientes(){
-                this.$http.get('api/user/me/calificaciones/pendientes').then(response => {
-                    this.pendientes = response.data.length;
-                }, response => {});
-            },
-            /** 
-            * Consulta de todas los mensajes.
-            * 
-            * @getMensajes 
-            */
-            getMensajes: function(){
-                this.mensajesPresupuesto = 0;
-                this.$http.get('api/mensaje')
-                .then(response => {
-                    for (let mensaje of response.data){
-                        if(this.isAfterNow(mensaje.reserva.fecha) && mensaje.reserva.presupuestado == false && mensaje.reserva.estado == 'presupuesto')
-                            this.mensajesPresupuesto++;
 
-                    }
-                })
-            },
             isAfterNow(value){
                 return moment(value, 'YYYY-MM-DD').isAfter(moment({}));
+            },
+            infiniteHandler($state) {
+                setTimeout(() => {
+                    const temp = [];
+                for (let i = this.notificaciones.length + 1; i <= this.notificaciones.length + 20; i++) {
+                    temp.push(i);
+                }
+                this.notificaciones = this.notificaciones.concat(temp);
+                    $state.loaded();
+                }, 1000);
             }
         },
         watch: {
-            /*'$route.path' () {
-                if(auth.checkRole(role.USUARIO))
-                    this.calificacionesPendientes();
-                if(auth.checkRole(role.PROVEEDOR))
-                    this.getMensajes();
-                if(auth.checkRole(role.ADMINISTRADOR) || auth.checkRole(role.SUPERVISOR))
-                    this.getNotificaciones();
-            }*/
+
         }
     }
 </script>
